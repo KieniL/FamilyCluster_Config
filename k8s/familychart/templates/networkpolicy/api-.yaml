@@ -16,10 +16,12 @@ spec:
     matchLabels:
       app: "{{ .Release.Name }}-apiservice"
   ingress:
+    {{ if .Values.monitoring.deploy }}
     - from:
       - namespaceSelector:
           matchLabels:
             name: monitoring
+    {{ end }}
     - from:
       - namespaceSelector:
           matchLabels:

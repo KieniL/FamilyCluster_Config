@@ -15,10 +15,12 @@ spec:
     matchLabels:
       app: "{{ .Release.Name }}-mysql"
   ingress:
+    {{ if .Values.monitoring.deploy }}
     - from:
       - namespaceSelector:
           matchLabels:
             name: monitoring
+    {{ end }}
     - from:
       - podSelector:
           matchLabels:

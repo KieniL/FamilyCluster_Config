@@ -209,3 +209,8 @@ tests:
   cpu_request: 50m
   # -- the cpu limit used for the dbconnectiontets pod
   cpu_limit: 400m
+
+
+monitoring:
+  deploy: false
+

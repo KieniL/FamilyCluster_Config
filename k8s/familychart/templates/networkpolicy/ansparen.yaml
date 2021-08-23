@@ -23,10 +23,12 @@ spec:
       ports:
       - protocol: TCP
         port: 8080
+    {{ if .Values.monitoring.deploy }}
     - from:
       - namespaceSelector:
           matchLabels:
             name: monitoring
+    {{ end }}
   policyTypes:
   - Egress
   egress:
