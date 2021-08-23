@@ -1,0 +1,163 @@
+{{ if .Values.testsuite.deploy }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}-testsuite"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-testsuite"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-testsuite"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-testsuite"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}-testsuite"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}-testsuite"
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: "{{ .Release.Name }}-testsuite"
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      hostAliases:
+      - ip: "192.168.0.100"
+        hostnames:
+        - "frontend.kieni.at"
+      volumes:
+      - name: testsuite-storage
+        emptyDir:
+          sizeLimit: 200Mi
+      - name: dshm
+        emptyDir:
+          medium: Memory
+          sizeLimit: 200Mi
+      initContainers:
+      - name: wait-for-gui
+        image: stefanevinance/wait-for-200
+        env:
+          - name: TIMEOUT
+            value: '5'
+          - name: URL
+            valueFrom:
+              configMapKeyRef:
+                name: "{{ .Release.Name }}-config"
+                key: GUI_URL
+        imagePullPolicy: Always
+      - name:  "{{ .Release.Name }}-testsuite"
+        image: luke19/familytestsuite@{{ .Values.testsuite.image }}
+        imagePullPolicy: Always
+        volumeMounts:
+        - name: testsuite-storage
+          mountPath: /report
+        - name: dshm
+          mountPath: /dev/shm
+        env:
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: TZ
+        - name: PROJECT_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: PROJECT_NAME
+        - name: URL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: GUI_URL
+        - name: TAKE_SCREENSHOTS
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: TAKE_SCREENSHOTS
+        - name: TA_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-secret"
+              key: TA_USERNAME
+        - name: TA_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-secret"
+              key: TA_PASSWORD
+        - name: TA_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-secret"
+              key: TA_SECRET
+      terminationGracePeriodSeconds: 40
+      containers:
+      - name:  testsuite-webserver
+        image: twalter/openshift-nginx:stable
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "{{ .Values.testsuite.resources.memory_limit }}"
+            cpu: "{{ .Values.testsuite.resources.cpu_limit }}"
+          requests:
+            memory: "{{ .Values.testsuite.resources.memory_request }}"
+            cpu: "{{ .Values.testsuite.resources.cpu_request }}"
+        env:
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: TZ
+        ports:
+        - containerPort: 8081 #Expose containerport to the pod
+        livenessProbe: #Check that pod is ready
+          httpGet:
+            path: / #path to check
+            port: 8081
+          initialDelaySeconds: 10 #start checking after 30 seconds
+          periodSeconds: 10 #check every 30 seconds
+          failureThreshold: 10
+        readinessProbe: #Check that pod is healthy
+          httpGet:
+            path: / #path to check
+            port: 8081 #port to check
+          initialDelaySeconds: 15 #start checking after 15 seconds
+          periodSeconds: 10 #check every 3 seconds
+          failureThreshold: 10
+        volumeMounts:
+        - name: testsuite-storage
+          mountPath: /usr/share/nginx/html
+        - name: dshm
+          mountPath: /dev/shm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-testsuite"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-testsuite"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-testsuite"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-testsuite"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  type: ClusterIP
+  ports:
+   - port: 8081
+     name: testsuite
+  selector:
+   app: "{{ .Release.Name }}-testsuite"
+{{ end }}

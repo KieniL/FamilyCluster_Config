@@ -1,0 +1,6 @@
+Since the db is only behind internal service.
+Create a proxy will working with the db and then stop it again with this command:
+
+kubectl port-forward -n {{ .Release.Namespace }} service/{{ .Release.Name }}-mysql --address 0.0.0.0 3306:3306
+
+

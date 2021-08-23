@@ -1,0 +1,48 @@
+{{ if .Values.auth.deploy }}
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: "{{ .Release.Name }}-authservice"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-authservice"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-authservice"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-authservice"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app: "{{ .Release.Name }}-authservice"
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: monitoring
+    - from:
+      - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-apiservice"
+      - podSelector:
+          matchLabels:
+            action: jwt-consumer
+      ports:
+      - protocol: TCP
+        port: 8080
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+  - to:
+    - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-mysql"
+    ports:
+    - protocol: TCP
+      port: 3306
+{{ end }}

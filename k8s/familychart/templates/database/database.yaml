@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}-mysql"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-mysql"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-mysql"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-mysql"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    container.apparmor.security.beta.kubernetes.io/mysql: runtime/default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}-mysql"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}-mysql"
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+        container.apparmor.security.beta.kubernetes.io/mysql: runtime/default
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - "{{ .Release.Name }}-mysql"
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      terminationGracePeriodSeconds: 40
+      securityContext:
+        runAsUser: 20000
+        runAsGroup: 20000
+        runAsNonRoot: true
+      containers:
+        - name: mysql
+          image: luke19/mysql-base-image@{{ .Values.storage.db.image }}
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "{{ .Values.storage.db.memory_limit }}"
+              cpu: "{{ .Values.storage.db.cpu_limit }}"
+            requests:
+              memory: "{{ .Values.storage.db.memory_request }}"
+              cpu: "{{ .Values.storage.db.cpu_request }}"
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsUser: 20000
+            runAsGroup: 20000
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            privileged: false
+            capabilities:
+              drop:
+              - all
+          ports:
+          - containerPort: 3306
+            name: mysql
+          - containerPort: 33060
+          livenessProbe:
+            tcpSocket:
+              port: 33060
+            initialDelaySeconds: 10 #start checking after 30 seconds
+            periodSeconds: 10 #check every 30 seconds
+            failureThreshold: 10
+          readinessProbe:
+            tcpSocket:
+              port: 3306
+            initialDelaySeconds: 10 #start checking after 30 seconds
+            periodSeconds: 10 #check every 30 seconds
+            failureThreshold: 10
+          volumeMounts:
+          {{ if .Values.storage.db.persistance_needed }}
+          - name: mysql-persistent-storage
+            mountPath: /var/lib/mysql
+            subPath: mysql
+          {{ end }}
+          - name: mysql-config-volume
+            mountPath: /etc/mysql/conf.d/mysql.cnf
+            subPath: default_bind
+          - name: tmp
+            mountPath: /tmp 
+          - name: pw-volume
+            mountPath: /etc/config/
+            readOnly: true
+          env:
+          - name: MYSQL_ROOT_PASSWORD_FILE
+            value: /etc/config/MYSQL_PASSWORD
+      volumes:
+      - name: mysql-config-volume
+        configMap:
+          name: "{{ .Release.Name }}-mysql-config"
+      {{ if .Values.storage.db.persistance_needed }}
+      - name: mysql-persistent-storage
+        persistentVolumeClaim:
+          claimName: "{{ .Release.Name }}-mysql-volume-claim"
+      {{ end }}
+      - name: tmp
+        emptyDir:
+          medium: Memory
+          sizeLimit: 200Mi
+      - name: pw-volume
+        secret:
+          secretName: "{{ .Release.Name }}-mysql-secret"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-mysql"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-mysql"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-mysql"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-mysql"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  ports:
+  - port: 3306
+    name: mysql
+  type: ClusterIP
+  selector:
+   app: "{{ .Release.Name }}-mysql"

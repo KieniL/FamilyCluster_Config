@@ -1,0 +1,18 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: "{{ .Release.Name }}-role-podsecuritypolicy"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-role-podsecuritypolicy"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-role-podsecuritypolicy"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-role-podsecuritypolicy"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+rules:
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  resourceNames:
+  - <list of policies to authorize>

@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  name: "{{ .Release.Name }}-authdb-test"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-authdb-test"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-authdb-test"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-authdb-test"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}-test"
+    app.kubernetes.io/managed-by: helm
+spec:
+  automountServiceAccountToken: false
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+              - "{{ .Release.Name }}-authdb-test"
+          topologyKey: kubernetes.io/hostname
+        weight: 100
+  terminationGracePeriodSeconds: 40
+  containers:
+    - name: "{{ .Release.Name }}-db-test"
+      image: luke19/mysql-base-image@{{ .Values.storage.db.image }}
+      imagePullPolicy: Always
+      resources:
+        limits:
+          memory: "{{ .Values.tests.memory_limit }}"
+          cpu: "{{ .Values.tests.cpu_limit }}"
+        requests:
+          memory: "{{ .Values.tests.memory_request }}"
+          cpu: "{{ .Values.tests.cpu_request }}"
+      env:
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-installer-secret"
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-installer-secret"
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-installer-secret"
+              key: AUTH_DB
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-installer-secret"
+              key: AUTH_USER
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: "{{ .Release.Name }}-installer-secret"
+              key: AUTH_PASS
+      command:
+        - /bin/bash
+        - -ec
+        - |
+          mysql --host=$DB_HOST --port=$DB_PORT --user=$DB_USER --password=$DB_PASS --database=$DB_NAME
+  restartPolicy: Never

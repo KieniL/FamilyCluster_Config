@@ -1,0 +1,70 @@
+{{ if .Values.installer.deploy }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-installer"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-installer"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-installer"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-installer"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+spec:
+  backoffLimit: 9
+  ttlSecondsAfterFinished: 50
+  template:
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 40
+      restartPolicy: Never
+      initContainers:
+      - name: wait-for-mysqldb
+        image: busybox:1.28
+        imagePullPolicy: Always
+        command: ['sh', '-c', "until nslookup {{ .Release.Name }}-mysql.{{ .Release.Namespace }}.svc.cluster.local; do echo waiting for mysql; sleep 20; done"]
+      securityContext:
+        runAsUser: 20000
+        runAsGroup: 20000
+        runAsNonRoot: true
+      volumes:
+      - name: secret-config-volume
+        secret:
+          secretName: "{{ .Release.Name }}-installer-secret"
+      containers:
+      - name:  "{{ .Release.Name }}-installer"
+        image: luke19/familycluster_installer@{{ .Values.installer.image }}
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 20000
+          runAsGroup: 20000
+          runAsNonRoot: true
+          capabilities:
+            drop:
+              - all
+        volumeMounts:
+        - name: secret-config-volume
+          mountPath: /etc/config
+          readOnly: true
+        resources:
+          limits:
+            memory: "{{ .Values.installer.resources.memory_limit }}"
+            cpu: "{{ .Values.installer.resources.cpu_limit }}"
+          requests:
+            memory: "{{ .Values.installer.resources.memory_request }}"
+            cpu: "{{ .Values.installer.resources.cpu_request }}"
+        env:
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: TZ
+        {{ if .Values.installer.deploy }}
+        - name: ADD_DUMMYDATA
+          value: "true"
+        {{ end }}
+{{ end }}

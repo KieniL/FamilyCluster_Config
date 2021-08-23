@@ -1,0 +1,52 @@
+{{ if .Values.ansparen.deploy }}
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: "{{ .Release.Name }}-ansparservice"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-ansparservice"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-ansparservice"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-ansparservice"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app: "{{ .Release.Name }}-ansparservice"
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-apiservice"
+      ports:
+      - protocol: TCP
+        port: 8080
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: monitoring
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+  - to:
+    - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-mysql"
+    ports:
+    - protocol: TCP
+      port: 3306
+  - to:
+    - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-authservice"
+    ports:
+    - protocol: TCP
+      port: 8080
+{{ end }}

@@ -1,0 +1,50 @@
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: "{{ .Release.Name }}-mysql"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-mysql"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-mysql"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-mysql"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app: "{{ .Release.Name }}-mysql"
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: monitoring
+    - from:
+      - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-authservice"
+      ports:
+      - protocol: TCP
+        port: 3306
+    - from:
+      - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-ansparservice"
+      ports:
+      - protocol: TCP
+        port: 3306
+    - from:
+      - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-certservice"
+      ports:
+      - protocol: TCP
+        port: 3306
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP

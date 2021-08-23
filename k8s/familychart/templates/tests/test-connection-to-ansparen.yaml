@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-connection-ansparen-test"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: "{{ .Release.Name }}-apiservice"
+    app.kubernetes.io/name: "{{ .Release.Name }}-connection-ansparen-test"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-connection-ansparen-test"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-connection-ansparen-test"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}-test"
+    app.kubernetes.io/managed-by: helm
+spec:
+  automountServiceAccountToken: false
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+              - "{{ .Release.Name }}-connection-ansparen-test"
+          topologyKey: kubernetes.io/hostname
+        weight: 100
+  terminationGracePeriodSeconds: 40
+  containers:
+    - name: "{{ .Release.Name }}-connection-ansparen-test"
+      image: curlimages/curl:7.77.0
+      imagePullPolicy: Always
+      resources:
+        limits:
+          memory: "{{ .Values.tests.memory_limit }}"
+          cpu: "{{ .Values.tests.cpu_limit }}"
+        requests:
+          memory: "{{ .Values.tests.memory_request }}"
+          cpu: "{{ .Values.tests.cpu_request }}"
+      env:
+        - name: ANSPAR_URL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-test-config"
+              key: ANSPAR_URL
+      args:
+      - /bin/sh
+      - -ec
+      - "curl \"http://$ANSPAR_URL\""
+  restartPolicy: Never

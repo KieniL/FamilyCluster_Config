@@ -1,0 +1,37 @@
+{{ if .Values.securitycheck.deploy }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-kube-hunter"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-kube-hunter"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-kube-hunter"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-kube-hunter"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}-kube-hunter"
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 40
+      containers:
+        - name: "{{ .Release.Name }}-kube-hunter"
+          image: aquasec/kube-hunter:0.6.1
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "{{ .Values.securitycheck.resources.memory_limit }}"
+              cpu: "{{ .Values.securitycheck.resources.cpu_limit }}"
+            requests:
+              memory: "{{ .Values.securitycheck.resources.memory_request }}"
+              cpu: "{{ .Values.securitycheck.resources.cpu_request }}"
+          command: ["kube-hunter"]
+          args: ["--pod"]
+      restartPolicy: Never
+  backoffLimit: 4
+{{ end }}

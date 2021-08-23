@@ -1,0 +1,66 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ .Release.Name }}-postman-unittest"
+  annotations:
+    "helm.sh/hook": test
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: "{{ .Release.Name }}-apiservice"
+    app.kubernetes.io/name: "{{ .Release.Name }}-postman-unittest"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-postman-unittest"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-postman-unittest"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}-test"
+    app.kubernetes.io/managed-by: helm
+spec:
+  automountServiceAccountToken: false
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+              - "{{ .Release.Name }}-postman-unittest"
+          topologyKey: kubernetes.io/hostname
+        weight: 100
+  terminationGracePeriodSeconds: 40
+  containers:
+    - name: "{{ .Release.Name }}-postman-unittest"
+      image: luke19/familypostman@{{ .Values.postman.image }}
+      imagePullPolicy: Always
+      resources:
+        limits:
+          memory: "{{ .Values.tests.memory_limit }}"
+          cpu: "{{ .Values.tests.cpu_limit }}"
+        requests:
+          memory: "{{ .Values.tests.memory_request }}"
+          cpu: "{{ .Values.tests.cpu_request }}"
+      env:
+      - name: ANSPAREN_HOST
+        valueFrom:
+          configMapKeyRef:
+            name: "{{ .Release.Name }}-test-config"
+            key: ANSPAR_URL
+      - name: AUTH_HOST
+        valueFrom:
+          configMapKeyRef:
+            name: "{{ .Release.Name }}-test-config"
+            key: AUTH_URL
+      - name: API_HOST
+        valueFrom:
+          configMapKeyRef:
+            name: "{{ .Release.Name }}-test-config"
+            key: API_URL
+      - name: CERT_HOST
+        valueFrom:
+          configMapKeyRef:
+            name: "{{ .Release.Name }}-test-config"
+            key: CERT_URL
+      - name: FOLDERS
+        value: "--folder Auth --folder Ansparen --folder Certification"
+  restartPolicy: Never

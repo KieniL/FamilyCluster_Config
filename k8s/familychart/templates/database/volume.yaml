@@ -1,0 +1,45 @@
+{{ if .Values.storage.db.persistance_needed }}
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: "{{ .Release.Name }}-mysql-volume"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mysql
+    app.kubernetes.io/name: "{{ .Release.Name }}-mysql-volume"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-mysql-volume"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-mysql-volume"
+    app.kubernetes.io/part-of: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  storageClassName: {{ .Values.storage.db.storageClassName }}
+  capacity:
+    storage: {{ .Values.storage.db.size }}
+  persistentVolumeReclaimPolicy: Retain
+  accessModes:
+    - {{ .Values.storage.db.accessModes }}
+  hostPath:
+    path: "{{ .Values.storage.db.path }}"
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: "{{ .Release.Name }}-mysql-volume-claim"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mysql
+    app.kubernetes.io/name: "{{ .Release.Name }}-mysql-volume-claim"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-mysql-volume-claim"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-mysql-volume-claim"
+    app.kubernetes.io/part-of: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: helm
+spec:
+  storageClassName: {{ .Values.storage.db.storageClassName }}
+  accessModes:
+    - {{ .Values.storage.db.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.storage.db.size }}
+{{ end }}

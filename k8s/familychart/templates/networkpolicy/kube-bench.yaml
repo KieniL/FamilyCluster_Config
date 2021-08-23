@@ -1,0 +1,21 @@
+{{ if .Values.securitycheck.deploy }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: "{{ .Release.Name }}-kube-bench"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-kube-bench"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-kube-bench"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-kube-bench"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app: "{{ .Release.Name }}-kube-bench"
+  policyTypes:
+  - Ingress
+  - Egress
+{{ end }}

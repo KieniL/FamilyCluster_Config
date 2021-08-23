@@ -1,0 +1,170 @@
+{{ if .Values.frontend.deploy }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}-frontend"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: frontend
+    app.kubernetes.io/name: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+  annotations:
+    seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    container.apparmor.security.beta.kubernetes.io/{{ .Release.Name }}-frontend: runtime/default
+spec:
+  selector:
+    matchLabels:
+      app:  "{{ .Release.Name }}-frontend"
+  template:
+    metadata:
+      labels:
+        app:  "{{ .Release.Name }}-frontend"
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+        container.apparmor.security.beta.kubernetes.io/{{ .Release.Name }}-frontend: runtime/default
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: "{{ .Release.Name }}-frontend"
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      terminationGracePeriodSeconds: 40
+      volumes:
+      - name: conf
+        emptyDir:
+          medium: Memory
+          sizeLimit: 200Mi
+      - name: tmp
+        emptyDir:
+          medium: Memory
+          sizeLimit: 200Mi
+      securityContext:
+        runAsUser: 20000
+        runAsGroup: 20000
+        runAsNonRoot: true
+      containers:
+      - name:  "{{ .Release.Name }}-frontend"
+        image: "luke19/familyfrontend@{{ .Values.frontend.image }}"
+        imagePullPolicy: Always
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 20000
+          runAsGroup: 20000
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          privileged: false
+          capabilities:
+            drop:
+              - all
+        volumeMounts:
+        - mountPath: /etc/nginx
+          name: conf
+        - mountPath: /tmp
+          name: tmp
+        resources:
+          limits:
+            memory: "{{ .Values.frontend.resources.memory_limit }}"
+            cpu: "{{ .Values.frontend.resources.cpu_limit }}"
+          requests:
+            memory: "{{ .Values.frontend.resources.memory_request }}"
+            cpu: "{{ .Values.frontend.resources.cpu_request }}"
+        env:
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: TZ
+        ports:
+        - containerPort: 8080 #Expose containerport to the pod
+        livenessProbe: #Check that pod is ready
+          httpGet:
+            path: /frontend #path to check
+            port: 8080
+          initialDelaySeconds: 10 #start checking after 30 seconds
+          periodSeconds: 10 #check every 30 seconds
+          failureThreshold: 10
+        readinessProbe:
+          initialDelaySeconds: 1
+          periodSeconds: 5
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 1
+          exec:
+            command:
+            - cat
+            - /etc/nginx/nginx.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-frontend"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  type: ClusterIP
+  ports:
+   - port: 8080
+     name: frontend
+  selector:
+   app: "{{ .Release.Name }}-frontend"
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: "{{ .Release.Name }}-frontend"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: "{{ .Release.Name }}-frontend"
+  minReplicas: {{ .Values.frontend.resources.hpa.min_replica }}
+  maxReplicas: {{ .Values.frontend.resources.hpa.max_replica }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.frontend.resources.hpa.cpu_utilization }}
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name:  "{{ .Release.Name }}-frontend"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-frontend"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app:  "{{ .Release.Name }}-frontend"
+{{ end }}

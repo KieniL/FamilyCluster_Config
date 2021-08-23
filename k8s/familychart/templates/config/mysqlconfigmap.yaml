@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-mysql-config"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: mysql
+    app.kubernetes.io/name: "{{ .Release.Name }}-mysql-config"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-mysql-config"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-mysql-config"
+    app.kubernetes.io/part-of: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: helm
+data:
+  default_bind: |
+    [mysql]
+    bind_address= '0.0.0.0'
+    [mysqld]
+    socket= /tmp/mysqld.sock
+    log-bin=/tmp/mysql
+    pid-file = /tmp/mysqld.pid

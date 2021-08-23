@@ -1,0 +1,211 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+installer:
+  # -- defines if the installer job should be deployed
+  deploy: false
+  # -- the image tag of the installer (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
+  image: "sha256:01e0c99e4c1fb6065873aacd408db0468b9ec3c29fdc0a98c79df2907bd7c0de"
+  # -- sets if the dummy_data should be added to the database
+  dummy_data: false
+  resources:
+    # -- the memory limit for the installer pod
+    memory_limit: 512Mi
+    # -- the memory request for the installer pod
+    memory_request: 256Mi
+    # -- the cpu request for the installer pod
+    cpu_request: 150m
+    # -- the cpu limit for the installer pod
+    cpu_limit: 1000m
+
+
+ansparen:
+  # -- defines if the ansparen deployment should be deployed
+  deploy: true
+  # -- the image tag of the ansparen deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
+  image: "sha256:b9a132f7e61010cc41dcb5a92e3b72f2d7baa64d4d0cb0aa822711fbccc2e442"
+  resources:
+    # -- the memory limit for the ansparen pod
+    memory_limit: 512Mi
+    # -- the memory request for the ansparen pod
+    memory_request: 256Mi
+    # -- the cpu request for the ansparen pod
+    cpu_request: 150m
+    # -- the cpu limit for the ansparen pod
+    cpu_limit: 1000m
+    hpa:
+      # -- the min replicas for ansparen
+      min_replica: 1
+      # -- the max replicas for ansparen
+      max_replica: 5
+      # -- the amount of cpu utilization to check for scaling
+      cpu_utilization: 60
+
+
+cert:
+  # -- defines if the certifiction deployment should be deployed
+  deploy: true
+  # -- the image tag of the certication deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
+  image: "sha256:63b8c18fcc1a0cf0a53f3c396a1e1f688d3e0f64496b34ca126713bc7064c26b"
+  resources:
+    # -- the memory limit for the certification pod
+    memory_limit: 512Mi
+    # -- the memory request for the certification pod
+    memory_request: 256Mi
+    # -- the cpu request for the certification pod
+    cpu_request: 150m
+    # -- the cpu limit for the certification pod
+    cpu_limit: 1000m
+    hpa:
+      # -- the min replicas for certification
+      min_replica: 1
+      # -- the max replicas for certification
+      max_replica: 5
+      # -- the amount of cpu utilization to check for scaling
+      cpu_utilization: 60
+
+
+auth:
+  # -- defines if the authentication deployment should be deployed
+  deploy: true
+  # -- the image tag of the authentication deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
+  image: "sha256:2011edd28e456300551d122e323b7372a9be2b8ef936f0c7996ff2252c1edd83"
+  resources:
+    # -- the memory limit for the authentication pod
+    memory_limit: 512Mi
+    # -- the memory request for the authentication pod
+    memory_request: 256Mi
+    # -- the cpu request for the authentication pod
+    cpu_request: 150m
+    # -- the cpu limit for the authentication pod
+    cpu_limit: 1000m
+    hpa:
+      # -- the min replicas for authentication
+      min_replica: 1
+      # -- the max replicas for authentication
+      max_replica: 5
+      # -- the amount of cpu utilization to check for scaling
+      cpu_utilization: 60
+
+
+
+api:
+  # -- defines if the api deployment should be deployed
+  deploy: true
+  # -- the image tag of the api deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
+  image: "sha256:4c7fa96c70e944b008beb84311ba93eddc73a7c9917d37f71d0e3e9aae227bbe"
+  resources:
+    # -- the memory limit for the api pod
+    memory_limit: 512Mi
+    # -- the memory request for the api pod
+    memory_request: 256Mi
+    # -- the cpu request for the api pod
+    cpu_request: 150m
+    # -- the cpu limit for the api pod
+    cpu_limit: 750m
+    hpa:
+      # -- the min replicas for api
+      min_replica: 1
+      # -- the max replicas for api
+      max_replica: 5
+      # -- the amount of cpu utilization to check for scaling
+      cpu_utilization: 60
+
+
+
+frontend:
+  # -- defines if the frontend deployment should be deployed
+  deploy: true
+  # -- the image tag of the frontend deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
+  image: "sha256:c76bab57fb23fc7faccbfed4253e265c84bceb7c074a8005a2d3e72beac2ef7f"
+  resources:
+    # -- the memory limit for the frontend pod
+    memory_limit: 512Mi
+    # -- the memory request for the frontend pod
+    memory_request: 256Mi
+    # -- the cpu request for the frontend pod
+    cpu_request: 150m
+    # -- the cpu limit for the frontend pod
+    cpu_limit: 750m
+    hpa:
+      # -- the min replicas for frontend
+      min_replica: 1
+      # -- the max replicas for frontend
+      max_replica: 5
+      # -- the amount of cpu utilization to check for scaling
+      cpu_utilization: 60
+
+
+testsuite:
+  # -- defines if the testsuite deployment should be deployed
+  deploy: false
+  # -- the image tag of the testsuite deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
+  image: "sha256:4a47d758559862512cabb90751c38f51b5fab0f81d65bd9ecea466f248d2ed15"
+  resources:
+    # -- the memory limit for the testsuite pod
+    memory_limit: 1000Mi
+    # -- the memory request for the testsuite pod
+    memory_request: 100Mi
+    # -- the cpu request for the testsuite pod
+    cpu_request: 150m
+    # -- the cpu limit for the testsuite pod
+    cpu_limit: 1000m
+
+securitycheck:
+  # -- defines if the security jobs (kube-hunter and kube-bench) should be deployed to check the service account token
+  deploy: false
+  resources:
+      # -- the memory limit for the security jobs
+      memory_limit: 1000Mi
+      # -- the memory request for the security jobs
+      memory_request: 100Mi
+      # -- the cpu request for the security jobs
+      cpu_request: 150m
+      # -- the cpu limit for the security jobs
+      cpu_limit: 1000m
+
+postman:
+  # -- defines the imagetag of the postman test (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
+  image: "sha256:e037db0ff1cec43e65a93948a30535ce2721c6fa6fb90c33470ce9b9639d8cdc"
+
+storage:
+  db:
+    # -- the imagetag to deploy (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
+    image: "sha256:fef5341d666ccb7ad9213027fc1815c1243d29f94bd2c7392f7f0d7177cf6e91"
+    # -- sets if the volume for the db should be used or not
+    persistance_needed: true
+    # -- the memory limit used for the mysql pod
+    memory_limit: 512Mi
+    # -- the memory request used for the mysql pod
+    memory_request: 256Mi
+    # -- the cpu request used for the mysql pod
+    cpu_request: 50m
+    # -- the cpu limit used for the mysql pod
+    cpu_limit: 400m
+    # -- the size of the volume used
+    size: 15Gi
+    # -- the accessModes used
+    accessModes: ReadWriteMany
+    # -- the storageClassName used in the volume
+    storageClassName: manual
+    # -- the path where to store the volume on disk
+    path: /mnt/k8s/dbdata
+
+ingress:
+  tls:
+    # -- the secret in the namespace for the ingress tls
+    secret: tls-secret
+  # -- the hostname for the ingress
+  url: frontend.kieni.at
+
+tests:
+  deploy: false
+  # -- the memory limit used for the dbconnectiontets pod
+  memory_limit: 512Mi
+  # -- the memory request used for the dbconnectiontets pod
+  memory_request: 256Mi
+  # -- the cpu request used for the dbconnectiontets pod
+  cpu_request: 50m
+  # -- the cpu limit used for the dbconnectiontets pod
+  cpu_limit: 400m

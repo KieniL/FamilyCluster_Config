@@ -1,0 +1,61 @@
+{{ if .Values.api.deploy }}
+kind: NetworkPolicy
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: "{{ .Release.Name }}-apiservice"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-apiservice"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-apiservice"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: "{{ .Release.Name }}-apiservice"
+    app.kubernetes.io/part-of: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: helm
+spec:
+  podSelector:
+    matchLabels:
+      app: "{{ .Release.Name }}-apiservice"
+  ingress:
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: monitoring
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: ingress 
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/instance: ingress
+      ports:
+      - protocol: TCP
+        port: 8080
+    - from:
+      - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-frontend"
+      ports:
+      - protocol: TCP
+        port: 8080
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+  - to:
+    - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-ansparservice"
+    - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-authservice"
+    - podSelector:
+          matchLabels:
+            app: "{{ .Release.Name }}-certservice"
+    ports:
+    - protocol: TCP
+      port: 8080
+{{ end }}
