@@ -75,6 +75,9 @@
 - [kube-linter](#kube-linter)
   - [Installation](#installation-14)
   - [Usage](#usage-15)
+- [kube-scape](#kube-scape)
+  - [Installation](#installation-15)
+  - [Usage](#usage-16)
 
 # Toolusage 
 
@@ -567,3 +570,15 @@ wget https://github.com/stackrox/kube-linter/releases/download/0.2.2/kube-linter
 ## Usage
 kube-linter lint k8s/familychart/ --add-all-built-in
 kube-linter lint pod.yaml
+
+
+# kube-scape
+
+A tool to check the security posture
+## Installation
+
+curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | /bin/bash
+
+## Usage
+
+kubescape scan framework nsa --exclude-namespaces kube-system,kube-public
