@@ -102,7 +102,8 @@ Runs following tools on the images used in the helm release:
 - conftest
 
 ## dockerhostcheck
-clones https://github.com/docker/docker-bench-security and runs it
+Creates a dockercontainer with docker bench security
+
 ## dockercheck_all
 Runs dockercheck_base, dockercheck_family and dockerhostcheck
 
