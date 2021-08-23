@@ -167,7 +167,7 @@ securitycheck:
 
 postman:
   # -- defines the imagetag of the postman test (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
-  image: "sha256:e037db0ff1cec43e65a93948a30535ce2721c6fa6fb90c33470ce9b9639d8cdc"
+  image: "sha256:1eeb4fd8b3f53be09f46ee4fc1d4a47e9ee450a2681b4d58e82283b73e5739f7"
 
 storage:
   db:
