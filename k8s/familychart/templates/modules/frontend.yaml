@@ -12,7 +12,9 @@ metadata:
     app.kubernetes.io/component: "{{ .Release.Name }}-frontend"
     app.kubernetes.io/part-of: "{{ .Release.Name }}"
     app.kubernetes.io/managed-by: helm
+    owner: KieniL
   annotations:
+    email: test@test.at
     seccomp.security.alpha.kubernetes.io/pod: runtime/default
     container.apparmor.security.beta.kubernetes.io/{{ .Release.Name }}-frontend: runtime/default
 spec:

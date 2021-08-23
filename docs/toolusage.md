@@ -59,25 +59,26 @@
   - [Disclaimer](#disclaimer)
 - [Datree](#datree)
   - [Installation:](#installation-11)
+  - [Usage](#usage-11)
 - [yara:](#yara)
   - [Installation](#installation-12)
-  - [Usage](#usage-11)
+  - [Usage](#usage-12)
 - [yarGen](#yargen)
   - [Installation](#installation-13)
-  - [Usage](#usage-12)
-- [kube-bench](#kube-bench)
   - [Usage](#usage-13)
+- [kube-bench](#kube-bench)
+  - [Usage](#usage-14)
     - [Docker](#docker)
 - [kube-hunter](#kube-hunter)
-  - [Usage](#usage-14)
+  - [Usage](#usage-15)
     - [Docker](#docker-1)
     - [Kubernetes see security folder under k8s/familychart](#kubernetes-see-security-folder-under-k8sfamilychart)
 - [kube-linter](#kube-linter)
   - [Installation](#installation-14)
-  - [Usage](#usage-15)
+  - [Usage](#usage-16)
 - [kube-scape](#kube-scape)
   - [Installation](#installation-15)
-  - [Usage](#usage-16)
+  - [Usage](#usage-17)
 
 # Toolusage 
 
@@ -481,6 +482,9 @@ I don't use it for testing since it has a lot of false positives and some not ve
 
 ## Installation:
 curl https://get.datree.io | /bin/bash
+
+## Usage
+datree test helmtemplate.yaml --schema-version 1.19.0
 
 Have some false positives ensume deployment has more than one replica so I configured the makefile to not stop on error at datree
 

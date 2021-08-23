@@ -10,9 +10,11 @@ metadata:
     app.kubernetes.io/component: "{{ .Release.Name }}-mysql"
     app.kubernetes.io/part-of: "{{ .Release.Name }}"
     app.kubernetes.io/managed-by: helm
+    owner: KieniL
   annotations:
     seccomp.security.alpha.kubernetes.io/pod: runtime/default
     container.apparmor.security.beta.kubernetes.io/mysql: runtime/default
+    email: test@test.at
 spec:
   replicas: 1
   selector:
