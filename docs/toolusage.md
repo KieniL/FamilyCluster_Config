@@ -79,6 +79,9 @@
 - [kube-scape](#kube-scape)
   - [Installation](#installation-15)
   - [Usage](#usage-17)
+- [Docker-bench](#docker-bench)
+  - [Installation](#installation-16)
+  - [Usage](#usage-18)
 
 # Toolusage 
 
@@ -586,3 +589,16 @@ curl -s https://raw.githubusercontent.com/armosec/kubescape/master/install.sh | 
 ## Usage
 
 kubescape scan framework nsa --exclude-namespaces kube-system,kube-public
+
+
+# Docker-bench
+A tool to check dockerhost benchmarks
+## Installation
+wget https://github.com/stackrox/kube-linter/releases/download/0.2.2/kube-linter-linux.tar.gz
+<br/>tar xvzf docker-bench_0.5.0_linux_amd64.tar.gz
+<br/> mv docker-bench /usr/local/bin
+<br/> mv cgf /usr/local/bin
+
+## Usage
+
+docker-bench -D /usr/local/bin/cfg

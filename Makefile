@@ -55,6 +55,7 @@ dockercheck_family:
 	conftest test ../*/Dockerfile
 
 dockerhostcheck:
+	docker-bench -D /usr/local/bin/cfg
 	docker pull docker/docker-bench-security
 	docker run --rm --net host --pid host --userns host --cap-add audit_control \
     -e DOCKER_CONTENT_TRUST=$DOCKER_CONTENT_TRUST \
