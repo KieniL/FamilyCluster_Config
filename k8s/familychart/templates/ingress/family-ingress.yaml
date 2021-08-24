@@ -16,6 +16,8 @@ metadata:
     nginx.ingress.kubernetes.io/enable-modsecurity: "true"
     nginx.ingress.kubernetes.io/enable-owasp-core-rules: "true"
     enable-owasp-modsecurity-crs: "true"
+    nginx.ingress.kubernetes.io/limit-rps: "{{ .Values.ingress.limitrps }}"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:
   - hosts:

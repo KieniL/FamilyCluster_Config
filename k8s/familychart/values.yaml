@@ -198,8 +198,11 @@ ingress:
     secret: tls-secret
   # -- the hostname for the ingress
   url: frontend.kieni.at
+  # -- the amount of allowed connections from an ip per second
+  limitrps: 5
 
 tests:
+  # -- set to true if the testconfigmap should be deployed too
   deploy: false
   # -- the memory limit used for the dbconnectiontets pod
   memory_limit: 512Mi
@@ -212,5 +215,6 @@ tests:
 
 
 monitoring:
+  # -- set to true if networkpolicy should be deployed with allowing the namespace monitoring
   deploy: false
 
