@@ -21,6 +21,7 @@ spec:
   template:
     spec:
       automountServiceAccountToken: false
+      serviceAccountName: default
       terminationGracePeriodSeconds: 40
       restartPolicy: Never
       initContainers:

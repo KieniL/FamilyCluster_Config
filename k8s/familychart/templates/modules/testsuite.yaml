@@ -26,6 +26,7 @@ spec:
         app: "{{ .Release.Name }}-testsuite"
     spec:
       automountServiceAccountToken: false
+      serviceAccountName: default
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

@@ -124,7 +124,7 @@ k8scheck:
 	helm template familyapp k8s/familychart/ --skip-tests --values k8s/familychart/values.yaml > helmtemplate.yaml
 	cat helmtemplate.yaml | kubeval --strict --schema-location https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/
 	cat helmtemplate.yaml | kube-score score - -o ci
-	-datree test helmtemplate.yaml --schema-version 1.19.0
+	-datree test helmtemplate.yaml --schema-version 1.21.0
 	-kubesec scan helmtemplate.yaml
 	kubeaudit all -f ./helmtemplate.yaml -p logrus
 	-checkov --quiet --compact -f helmtemplate.yaml

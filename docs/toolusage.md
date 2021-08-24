@@ -412,24 +412,7 @@ sudo cp kubesec /usr/local/bin/kubesec
 
 kubesec scan YAML
 
-I configured Makefile to not stop on kubesec error since there are two false positives:
-
-{
-  "id": "ApparmorAny",
-  "selector": ".metadata .annotations .\"container.apparmor.security.beta.kubernetes.io/nginx\"",
-  "reason": "Well defined AppArmor policies may provide greater protection from unknown threats. WARNING: NOT PRODUCTION READY",
-  "points": 3
-},
-{
-  "id": "ServiceAccountName",
-  "selector": ".spec .serviceAccountName",
-  "reason": "Service accounts restrict Kubernetes API access and should be configured with least privilege",
-  "points": 3
-}
-
-ServiceAccount error is a false positive since i alread have `automountServiceAccountToken: false` in the deployments.
-
-There are also a lot of kinds which are not supported by kubesec.
+I configured Makefile to not stop on kubesec error since there are many false positives due to not supported schemas
 
 
 

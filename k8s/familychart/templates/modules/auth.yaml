@@ -29,6 +29,7 @@ spec:
         container.apparmor.security.beta.kubernetes.io/{{ .Release.Name }}-authservice: runtime/default
     spec:
       automountServiceAccountToken: false
+      serviceAccountName: default
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
