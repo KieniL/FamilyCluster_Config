@@ -118,7 +118,7 @@ frontend:
   # -- defines if the frontend deployment should be deployed
   deploy: true
   # -- the image tag of the frontend deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
-  image: "sha256:c76bab57fb23fc7faccbfed4253e265c84bceb7c074a8005a2d3e72beac2ef7f"
+  image: "sha256:a96979321ae91a2b3a5c410e56f62dc92282b9960c2ac7381ee1da9c8245ba6e"
   resources:
     # -- the memory limit for the frontend pod
     memory_limit: 512Mi

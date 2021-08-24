@@ -45,7 +45,7 @@ A Helm chart for my familyapp
 | cert.resources.memory_limit | string | `"512Mi"` | the memory limit for the certification pod |
 | cert.resources.memory_request | string | `"256Mi"` | the memory request for the certification pod |
 | frontend.deploy | bool | `true` | defines if the frontend deployment should be deployed |
-| frontend.image | string | `"sha256:c76bab57fb23fc7faccbfed4253e265c84bceb7c074a8005a2d3e72beac2ef7f"` | the image tag of the frontend deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
+| frontend.image | string | `"sha256:a96979321ae91a2b3a5c410e56f62dc92282b9960c2ac7381ee1da9c8245ba6e"` | the image tag of the frontend deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
 | frontend.resources.cpu_limit | string | `"750m"` | the cpu limit for the frontend pod |
 | frontend.resources.cpu_request | string | `"150m"` | the cpu request for the frontend pod |
 | frontend.resources.hpa.cpu_utilization | int | `60` | the amount of cpu utilization to check for scaling |
