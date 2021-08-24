@@ -4,6 +4,7 @@ import data.kubernetes
 
 name = input.metadata.name
 namespace = input.metadata.namespace
+annotations = input.metadata.annotations
 spec = input.spec
 
 
@@ -26,4 +27,19 @@ deny[msg] {
   not spec.rules
 
   msg := sprintf("ingress %v has not rules section provided", [name])
+}
+
+deny[msg] {
+  kubernetes.is_ingress
+  not annotations
+
+  msg := sprintf("ingress %v does not have any annotations", [name])
+}
+
+deny[msg] {
+  kubernetes.is_ingress
+  not annotations["nginx.ingress.kubernetes.io/limit-rps"]
+  not annotations["nginx.ingress.kubernetes.io/limit-rpm"]
+
+  msg := sprintf("ingress %v needs to have a limit-per-seconds or limit-per-minutes to mitigate DDoS. See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#rate-limiting", [name])
 }
