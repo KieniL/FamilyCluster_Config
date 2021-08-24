@@ -22,7 +22,7 @@ dockercheck_base:
 	dockerfile_lint -u -f  ../../DevOps/base_images/spring/Dockerfile
 
 	hadolint -t error --config hadolint_config.yaml ../../DevOps/base_images/*/Dockerfile
-	@conftest test ../../DevOps/base_images/*/Dockerfile
+	conftest test ../../DevOps/base_images/*/Dockerfile
 
 dockercheck_family:
 	dockerlint -p -f ../FamilyCluster_Api/Dockerfile
@@ -52,7 +52,7 @@ dockercheck_family:
 	hadolint -t error --config hadolint_config.yaml ../*/Dockerfile
 	hadolint -t error --config hadolint_config.yaml postman/Dockerfile
 
-	@conftest test ../*/Dockerfile
+	conftest test ../*/Dockerfile
 
 dockerhostcheck:
 	docker pull docker/docker-bench-security
@@ -128,7 +128,7 @@ k8scheck:
 	kubeaudit all -f ./helmtemplate.yaml -p logrus
 	-checkov --quiet --compact -f helmtemplate.yaml
 	kube-linter lint helmtemplate.yaml --add-all-built-in
-	@helm conftest unittest k8s/familychart/
+	helm conftest unittest k8s/familychart/
 	kubescape scan framework nsa --exclude-namespaces kube-system,kube-public
 	rm helmtemplate.yaml
 
