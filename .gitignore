@@ -4,7 +4,6 @@ k8s/jupyterhub/config.yaml
 frontend/.eslintcache
 ansible/.vagrant
 .vscode/
-tls.yaml
 helmtemplate.yaml
 helmvalues.yaml
 trivy_imagescan.txt

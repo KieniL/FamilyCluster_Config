@@ -3,7 +3,24 @@
 
 Every secret is only local so you see a static view here.
 
-
+# tls secret
+The secret used by the ingress
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ .Release.Name }}-tls-secret
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-tls-secret"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-tls-secret"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: tls-secret
+    app.kubernetes.io/part-of: familyapp
+    app.kubernetes.io/managed-by: helm
+type: kubernetes.io/tls
+data:
+  tls.crt: base64 encoded crt
+  tls.key: base64 encoded key
 ## Application Properties secrets
 
 Since the environment variables can be seen in /proc/1/environ the properties file is mounted as a a volume from the secret. The volume can also be seen with df. At further looking into it, it is easier to iterate the /proc processes since there are few processes due to containerization (only three) in comparison to 11 tmpfs (2 to /app).
@@ -19,7 +36,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/name: "{{ .Release.Name }}-ansparen-application-properties-secret"
-    app.kubernetes.io/instance: "{{ .Release.Name }}-ansparen-application-properties-secret"
+    app.kubernetes.io/instance: "{{ .Release.Name }"
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/component: secret
     app.kubernetes.io/part-of: familyapp
