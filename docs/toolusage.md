@@ -82,6 +82,9 @@
 - [Docker-bench](#docker-bench)
   - [Installation](#installation-16)
   - [Usage](#usage-18)
+- [ffuf](#ffuf)
+  - [Installation](#installation-17)
+  - [Usage](#usage-19)
 
 # Toolusage 
 
@@ -585,3 +588,16 @@ wget https://github.com/stackrox/kube-linter/releases/download/0.2.2/kube-linter
 ## Usage
 
 docker-bench -D /usr/local/bin/cfg
+
+
+# ffuf
+a tool to fuzztest websites or enumerate credentials
+
+You should also clone the secLists repo for data:https://github.com/danielmiessler/SecLists
+## Installation
+wget https://github.com/ffuf/ffuf/releases/download/v1.3.1/ffuf_1.3.1_linux_amd64.tar.gz
+<br/>tar xvzf ffuf_1.3.1_linux_amd64.tar.gz
+<br/> mv ffuf /usr/local/bin
+
+## Usage
+ffuf -w /usr/share/seclists/Usernames/Names/names.txt -X POST -d "username=FUZZ&email=x&password=x&cpassword=x" -H "Content-Type: application/x-www-form-urlencoded" -u http://10.10.38.126/customers/signup -mr "username already exists"
