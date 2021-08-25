@@ -27,7 +27,7 @@ A Helm chart for my familyapp
 | api.resources.memory_limit | string | `"512Mi"` | the memory limit for the api pod |
 | api.resources.memory_request | string | `"256Mi"` | the memory request for the api pod |
 | auth.deploy | bool | `true` | defines if the authentication deployment should be deployed |
-| auth.image | string | `"sha256:2011edd28e456300551d122e323b7372a9be2b8ef936f0c7996ff2252c1edd83"` | the image tag of the authentication deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
+| auth.image | string | `"sha256:a5c66deb22a74abb5cd644bb5a0209d3706551fb303144df8079ff18b0799f91"` | the image tag of the authentication deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
 | auth.resources.cpu_limit | string | `"1000m"` | the cpu limit for the authentication pod |
 | auth.resources.cpu_request | string | `"150m"` | the cpu request for the authentication pod |
 | auth.resources.hpa.cpu_utilization | int | `60` | the amount of cpu utilization to check for scaling |
