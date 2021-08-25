@@ -206,6 +206,24 @@ deny[msg] {
 
 deny[msg] {
   kubernetes.is_deployment
+  exists_in_list(name, serviceaccount_needed)
+  template_spec.serviceAccountName == "default"
+  template_spec.automountServiceAccountToken == false
+
+  msg := sprintf("deployment %v has the automount of serviceaccounts disabled. The set serviceAccountName will not be used.", [name])
+}
+
+deny[msg] {
+  kubernetes.is_deployment
+  exists_in_list(name, serviceaccount_needed)
+  template_spec.serviceAccountName == "default"
+  not template_spec.automountServiceAccountToken == false
+
+  msg := sprintf("deployment %v uses the default serviceaccount. Please create a separate one based on Least Privilege.", [name])
+}
+
+deny[msg] {
+  kubernetes.is_deployment
   emptyDir := template_spec.volumes[_].emptyDir
   not emptyDir.sizeLimit
 

@@ -170,6 +170,24 @@ deny[msg] {
 
 deny[msg] {
   kubernetes.is_pod
+  exists_in_list(name, serviceaccount_needed)
+  spec.serviceAccountName == "default"
+  spec.automountServiceAccountToken == false
+
+  msg := sprintf("pod %v has the automount of serviceaccounts disabled. The set serviceAccountName will not be used.", [name])
+}
+
+deny[msg] {
+  kubernetes.is_pod
+  exists_in_list(name, serviceaccount_needed)
+  spec.serviceAccountName == "default"
+  not spec.automountServiceAccountToken == false
+
+  msg := sprintf("pod %v uses the default serviceaccount. Please create a separate one based on Least Privilege.", [name])
+}
+
+deny[msg] {
+  kubernetes.is_pod
   emptyDir := spec.volumes[_].emptyDir
   not emptyDir.sizeLimit
 
