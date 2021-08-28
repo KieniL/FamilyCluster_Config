@@ -15,3 +15,11 @@ data:
   TZ: "Europe/Berlin"
   PROJECT_NAME: "Family Testsuite"
   TAKE_SCREENSHOTS: FOR_EACH_ACTION
+  DB_HOST: {{ .Release.Name }}-mysql
+  DB_PORT: "3306"
+  AUTH_URL: {{ .Release.Name }}-authservice:8080
+  ANSPAREN_LOG_LEVEL: INFO
+  AUTH_LOG_LEVEL: INFO
+  CERT_LOG_LEVEL: INFO
+  API_LOG_LEVEL: INFO
+  COMPANY_NAME: kieni

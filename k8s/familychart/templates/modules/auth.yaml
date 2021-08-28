@@ -27,9 +27,31 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
         container.apparmor.security.beta.kubernetes.io/{{ .Release.Name }}-authservice: runtime/default
+        # AGENT INJECTOR SETTINGS
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/agent-run-as-same-user: "true"
+        # Application Properties SECRET
+        vault.hashicorp.com/agent-inject-secret-application.properties: "k8s_secrets/family/authdb"
+        vault.hashicorp.com/agent-inject-command-application.properties: "sh -c 'kill -HUP 1"
+        vault.hashicorp.com/secret-volume-path-application.properties: /app/config
+        vault.hashicorp.com/agent-inject-template-application.properties: |
+          {{`{{- with secret "k8s_secrets/family/authdb" -}}
+          server.port=8080
+          spring.application.name=familyauth
+          management.health.probes.enabled=true
+          spring.datasource.url=jdbc:mysql://${DB_HOST}:${DB_PORT}/{{ .Data.db }}
+          spring.datasource.username={{ .Data.username }}
+          spring.datasource.password={{ .Data.password }}
+          spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL8Dialect
+          spring.jpa.hibernate.ddl-auto = update
+          companyName=${COMPANY_NAME}
+          logging.level.com.kienast.authservice=${AUTH_LOG_LEVEL}
+          {{- end }}`}}
+        # VAULT SETTINGS
+        vault.hashicorp.com/role: 'auth-app'
     spec:
-      automountServiceAccountToken: false
-      serviceAccountName: default
+      serviceAccountName: {{ .Release.Name }}-authservice-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -45,9 +67,6 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 200Mi
-      - name: application-properties-volume
-        secret:
-          secretName: "{{ .Release.Name }}-auth-application-properties-secret"
       securityContext:
         runAsUser: 20000
         runAsGroup: 20000
@@ -69,9 +88,6 @@ spec:
         volumeMounts:
         - mountPath: /app/tmp
           name: tmp
-        - name: application-properties-volume
-          mountPath: /app/config
-          readOnly: true
         resources:
           limits:
             memory: "{{ .Values.auth.resources.memory_limit }}"
@@ -85,6 +101,26 @@ spec:
             configMapKeyRef:
               name: "{{ .Release.Name }}-config"
               key: TZ
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: DB_PORT
+        - name: AUTH_LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: AUTH_LOG_LEVEL
+        - name: COMPANY_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: COMPANY_NAME
         ports:
         - containerPort: 8080 #Expose containerport to the pod
         livenessProbe: #Check that pod is ready
