@@ -29,6 +29,10 @@ spec:
           matchLabels:
             name: monitoring
     {{ end }}
+    - from:
+      - namespaceSelector:
+          matchLabels:
+            name: vault
   policyTypes:
   - Egress
   egress:
@@ -51,4 +55,10 @@ spec:
     ports:
     - protocol: TCP
       port: 8080
+  - to:
+    - ipBlock:
+        cidr: 10.0.1.1/32
+    ports:
+    - protocol: TCP
+      port: 8200
 {{ end }}

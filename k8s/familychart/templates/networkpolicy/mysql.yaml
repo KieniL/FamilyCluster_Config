@@ -50,3 +50,9 @@ spec:
       protocol: UDP
     - port: 53
       protocol: TCP
+  - to:
+    - ipBlock:
+        cidr: 10.0.1.1/32
+    ports:
+    - protocol: TCP
+      port: 8200
