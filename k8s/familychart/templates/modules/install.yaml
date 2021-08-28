@@ -19,9 +19,73 @@ spec:
   backoffLimit: 9
   ttlSecondsAfterFinished: 50
   template:
+    metadata:
+      annotations:
+        # AGENT INJECTOR SETTINGS
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/agent-run-as-same-user: "true"
+        vault.hashicorp.com/agent-pre-populate-only : "true"
+        # DB SECRETs
+        vault.hashicorp.com/agent-inject-secret-auth_db: "k8s_secrets/family/authdb"
+        vault.hashicorp.com/agent-inject-template-auth_db: |
+          {{`{{- with secret "k8s_secrets/family/authdb" -}}
+            {{ .Data.db }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-cert_db: "k8s_secrets/family/certdb"
+        vault.hashicorp.com/agent-inject-template-cert_db: |
+          {{`{{- with secret "k8s_secrets/family/certdb" -}}
+            {{ .Data.db }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-anspar_db: "k8s_secrets/family/anspardb"
+        vault.hashicorp.com/agent-inject-template-anspar_db: |
+          {{`{{- with secret "k8s_secrets/family/anspardb" -}}
+            {{ .Data.db }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-auth_user: "k8s_secrets/family/authdb"
+        vault.hashicorp.com/agent-inject-template-auth_user: |
+          {{`{{- with secret "k8s_secrets/family/authdb" -}}
+            {{ .Data.username }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-cert_user: "k8s_secrets/family/certdb"
+        vault.hashicorp.com/agent-inject-template-cert_user: |
+          {{`{{- with secret "k8s_secrets/family/certdb" -}}
+            {{ .Data.username }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-anspar_user: "k8s_secrets/family/anspardb"
+        vault.hashicorp.com/agent-inject-template-anspar_user: |
+          {{`{{- with secret "k8s_secrets/family/anspardb" -}}
+            {{ .Data.username }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-auth_pass: "k8s_secrets/family/authdb"
+        vault.hashicorp.com/agent-inject-template-auth_pass: |
+          {{`{{- with secret "k8s_secrets/family/authdb" -}}
+            {{ .Data.password }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-cert_pass: "k8s_secrets/family/certdb"
+        vault.hashicorp.com/agent-inject-template-cert_pass: |
+          {{`{{- with secret "k8s_secrets/family/certdb" -}}
+            {{ .Data.password }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-anspar_pass: "k8s_secrets/family/anspardb"
+        vault.hashicorp.com/agent-inject-template-anspar_pass: |
+          {{`{{- with secret "k8s_secrets/family/anspardb" -}}
+            {{ .Data.password }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-db_admin_user: "k8s_secrets/family/admin"
+        vault.hashicorp.com/agent-inject-template-db_admin_user: |
+          {{`{{- with secret "k8s_secrets/family/admin" -}}
+            {{ .Data.username }}
+          {{- end }}`}}
+        vault.hashicorp.com/agent-inject-secret-db_admin_password: "k8s_secrets/family/admin"
+        vault.hashicorp.com/agent-inject-template-db_admin_password: |
+          {{`{{- with secret "k8s_secrets/family/admin" -}}
+            {{ .Data.password }}
+          {{- end }}`}}
+        # VAULT SETTINGS
+        vault.hashicorp.com/role: 'installer-app'
     spec:
-      automountServiceAccountToken: false
-      serviceAccountName: default
+      serviceAccountName: {{ .Release.Name }}-installer-sa
       terminationGracePeriodSeconds: 40
       restartPolicy: Never
       initContainers:
@@ -33,10 +97,6 @@ spec:
         runAsUser: 20000
         runAsGroup: 20000
         runAsNonRoot: true
-      volumes:
-      - name: secret-config-volume
-        secret:
-          secretName: "{{ .Release.Name }}-installer-secret"
       containers:
       - name:  "{{ .Release.Name }}-installer"
         image: luke19/familycluster_installer@{{ .Values.installer.image }}
@@ -49,10 +109,6 @@ spec:
           capabilities:
             drop:
               - all
-        volumeMounts:
-        - name: secret-config-volume
-          mountPath: /etc/config
-          readOnly: true
         resources:
           limits:
             memory: "{{ .Values.installer.resources.memory_limit }}"
@@ -66,6 +122,16 @@ spec:
             configMapKeyRef:
               name: "{{ .Release.Name }}-config"
               key: TZ
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: DB_PORT
         {{ if .Values.installer.deploy }}
         - name: ADD_DUMMYDATA
           value: "true"

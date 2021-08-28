@@ -6,7 +6,7 @@ installer:
   # -- defines if the installer job should be deployed
   deploy: false
   # -- the image tag of the installer (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
-  image: "sha256:01e0c99e4c1fb6065873aacd408db0468b9ec3c29fdc0a98c79df2907bd7c0de"
+  image: "sha256:b529fd4294c06e2f6a58195a1eacd41d9b9a812d81797f7c1214aa274b995660"
   # -- sets if the dummy_data should be added to the database
   dummy_data: false
   resources:
