@@ -11,15 +11,19 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name }}
     app.kubernetes.io/managed-by: helm
 data:
+  ANSPAREN_LOG_LEVEL: INFO
+  ANSPAREN_URL: {{ .Release.Name }}-ansparservice:8080
+  API_LOG_LEVEL: INFO
+  API_URL: {{ .Release.Name }}-apiservice:8080/api
+  AUTH_LOG_LEVEL: INFO
+  AUTH_URL: {{ .Release.Name }}-authservice:8080
+  CERT_LOG_LEVEL: INFO
+  CERT_URL: {{ .Release.Name }}-certservice:8080
+  COMPANY_NAME: kieni
+  DB_HOST: {{ .Release.Name }}-mysql
+  DB_PORT: "3306"
+  FRONTEND_URL: "{{ .Release.Name }}-frontend:8080"
   GUI_URL: "http://{{ .Release.Name }}-frontend:8080"
   TZ: "Europe/Berlin"
   PROJECT_NAME: "Family Testsuite"
   TAKE_SCREENSHOTS: FOR_EACH_ACTION
-  DB_HOST: {{ .Release.Name }}-mysql
-  DB_PORT: "3306"
-  AUTH_URL: {{ .Release.Name }}-authservice:8080
-  ANSPAREN_LOG_LEVEL: INFO
-  AUTH_LOG_LEVEL: INFO
-  CERT_LOG_LEVEL: INFO
-  API_LOG_LEVEL: INFO
-  COMPANY_NAME: kieni

@@ -44,22 +44,22 @@ spec:
       - name: ANSPAREN_HOST
         valueFrom:
           configMapKeyRef:
-            name: "{{ .Release.Name }}-test-config"
-            key: ANSPAR_URL
+            name: "{{ .Release.Name }}-config"
+            key: ANSPAREN_URL
       - name: AUTH_HOST
         valueFrom:
           configMapKeyRef:
-            name: "{{ .Release.Name }}-test-config"
+            name: "{{ .Release.Name }}-config"
             key: AUTH_URL
       - name: API_HOST
         valueFrom:
           configMapKeyRef:
-            name: "{{ .Release.Name }}-test-config"
+            name: "{{ .Release.Name }}-config"
             key: API_URL
       - name: CERT_HOST
         valueFrom:
           configMapKeyRef:
-            name: "{{ .Release.Name }}-test-config"
+            name: "{{ .Release.Name }}-config"
             key: CERT_URL
       - name: FOLDERS
         value: "--folder Auth --folder Ansparen --folder Certification"

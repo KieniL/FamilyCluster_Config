@@ -41,13 +41,13 @@ spec:
           memory: "{{ .Values.tests.memory_request }}"
           cpu: "{{ .Values.tests.cpu_request }}"
       env:
-        - name: ANSPAR_URL
+        - name: ANSPAREN_URL
           valueFrom:
             configMapKeyRef:
-              name: "{{ .Release.Name }}-test-config"
-              key: ANSPAR_URL
+              name: "{{ .Release.Name }}-config"
+              key: ANSPAREN_URL
       args:
       - /bin/sh
       - -ec
-      - "curl \"http://$ANSPAR_URL\""
+      - "curl \"http://$ANSPAREN_URL\""
   restartPolicy: Never

@@ -47,8 +47,8 @@ spec:
           medium: Memory
           sizeLimit: 200Mi
       - name: application-properties-volume
-        secret:
-          secretName: "{{ .Release.Name }}-api-application-properties-secret"
+        configMap:
+          name:  "{{ .Release.Name }}-api-application-properties-configmap"
       securityContext:
         runAsUser: 20000
         runAsGroup: 20000
@@ -86,6 +86,26 @@ spec:
             configMapKeyRef:
               name: "{{ .Release.Name }}-config"
               key: TZ
+        - name: AUTH_URL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: AUTH_URL
+        - name: ANSPAREN_URL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: ANSPAREN_URL
+        - name: CERT_URL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: CERT_URL
+        - name: API_LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: API_LOG_LEVEL
         ports:
         - containerPort: 8080 #Expose containerport to the pod
         livenessProbe: #Check that pod is ready

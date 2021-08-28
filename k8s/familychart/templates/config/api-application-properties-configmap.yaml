@@ -1,0 +1,24 @@
+{{ if .Values.api.deploy }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-api-application-properties-configmap"
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}-api-application-properties-configmap"
+    app.kubernetes.io/instance: "{{ .Release.Name }}-api-application-properties-configmap"
+    app.kubernetes.io/version: "1.0"
+    app.kubernetes.io/component: configmap
+    app.kubernetes.io/part-of: familyapp
+    app.kubernetes.io/managed-by: helm
+data:
+  application.properties: |
+    server.port=8080
+    server.servlet.context-path=/api
+    spring.application.name=apiservice
+    authURL=${AUTH_URL}
+    ansparURL=${ANSPAREN_URL}
+    certURL=${CERT_URL}
+    management.health.probes.enabled=true
+    logging.level.com.kienast.apiservice= ${API_LOG_LEVEL}
+{{ end }}
