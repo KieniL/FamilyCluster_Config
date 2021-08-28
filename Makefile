@@ -128,7 +128,7 @@ k8scheck:
 	-kubesec scan helmtemplate.yaml
 	kubeaudit all -f ./helmtemplate.yaml -p logrus
 	-checkov --quiet --compact -f helmtemplate.yaml
-	kube-linter lint helmtemplate.yaml --add-all-built-in
+	kube-linter lint helmtemplate.yaml --add-all-built-in --exclude minimum-three-replicas
 	helm conftest unittest k8s/familychart/
 	kubescape scan framework nsa --exclude-namespaces kube-system,kube-public
 	rm helmtemplate.yaml

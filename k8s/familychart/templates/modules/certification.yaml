@@ -20,6 +20,12 @@ spec:
   selector:
     matchLabels:
       app:  "{{ .Release.Name }}-certservice"
+  minReadySeconds: 10
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:

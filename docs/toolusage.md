@@ -564,7 +564,7 @@ wget https://github.com/stackrox/kube-linter/releases/download/0.2.2/kube-linter
 kube-linter lint k8s/familychart/ --add-all-built-in
 kube-linter lint pod.yaml
 
-
+In the make file I added --exclude minimum-three-replicas since the load and replicas are managed by hpa on every app except of the db
 # kube-scape
 
 A tool to check the security posture
