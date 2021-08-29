@@ -27,3 +27,7 @@ data:
   TZ: "Europe/Berlin"
   PROJECT_NAME: "Family Testsuite"
   TAKE_SCREENSHOTS: FOR_EACH_ACTION
+  AUTH_COMMON_CREDENTIALS_LOCATION: /pw_validations/commoncredentials.txt
+  AUTH_LEADKED_DATABASE_PASSWORDS_LOCATION: /pw_validations/leakedpasswords.txt
+  AUTH_TOP_USERNAMES_LOCATION: /pw_validations/topusernames.txt
+  AUTH_LEAKED_USERNAMES_LOCATION: /pw_validations/leakedusernames.txt

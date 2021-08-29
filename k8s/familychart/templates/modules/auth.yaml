@@ -53,6 +53,7 @@ spec:
           spring.jpa.hibernate.ddl-auto = update
           companyName=${COMPANY_NAME}
           logging.level.com.kienast.authservice=${AUTH_LOG_LEVEL}
+          secListLocation=${SECLIST_LOCATION}
           {{- end }}`}}
         # VAULT SETTINGS
         vault.hashicorp.com/role: 'auth-app'
@@ -73,6 +74,9 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 200Mi
+      - name: pw-validation-volume
+        configMap:
+          name:  "{{ .Release.Name }}-pw-validation-configmap"
       securityContext:
         runAsUser: 20000
         runAsGroup: 20000
@@ -94,6 +98,9 @@ spec:
         volumeMounts:
         - mountPath: /app/tmp
           name: tmp
+        - name: pw-validation-volume
+          mountPath: /pw_validations
+          readOnly: true
         resources:
           limits:
             memory: "{{ .Values.auth.resources.memory_limit }}"
@@ -127,6 +134,26 @@ spec:
             configMapKeyRef:
               name: "{{ .Release.Name }}-config"
               key: COMPANY_NAME
+        - name: COMMON_CREDENTIALS_LOCATION
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: AUTH_COMMON_CREDENTIALS_LOCATION
+        - name: LEADKED_DATABASE_PASSWORDS_LOCATION
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: AUTH_LEADKED_DATABASE_PASSWORDS_LOCATION
+        - name: TOP_USERNAMES_LOCATION
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: AUTH_TOP_USERNAMES_LOCATION
+        - name: LEAKED_USERNAMES_LOCATION
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: AUTH_LEAKED_USERNAMES_LOCATION
         ports:
         - containerPort: 8080 #Expose containerport to the pod
         livenessProbe: #Check that pod is ready
