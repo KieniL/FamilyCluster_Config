@@ -94,7 +94,7 @@ api:
   # -- defines if the api deployment should be deployed
   deploy: true
   # -- the image tag of the api deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
-  image: "sha256:4c7fa96c70e944b008beb84311ba93eddc73a7c9917d37f71d0e3e9aae227bbe"
+  image: "sha256:f470beb4e228248544fcdfd75b00c875ac058ce472434cfedcd17c33e0af9efe"
   resources:
     # -- the memory limit for the api pod
     memory_limit: 512Mi
