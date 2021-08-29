@@ -13,6 +13,7 @@ metadata:
   annotations:
     seccomp.security.alpha.kubernetes.io/pod: 'runtime/default'
     seccomp.security.alpha.kubernetes.io/allowedProfileNames: 'docker/default,runtime/default'
+    seccomp.security.alpha.kubernetes.io/defaultProfileName: 'runtime/default'
     apparmor.security.beta.kubernetes.io/allowedProfileNames: 'runtime/default'
     apparmor.security.beta.kubernetes.io/defaultProfileName:  'runtime/default'
 spec:

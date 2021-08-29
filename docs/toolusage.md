@@ -449,7 +449,7 @@ checkov -f YAML
 
 I don't use bridgecrew since the ingeration didn't work
 
-the makefile is configured to not stop on error since there is a false positive on podsecuritypolicy and the seccomp profile
+the makefile is configured to not stop on error since there is an error on serviceaccounts to only mount when necessary but it is needed for vault
 # Terrascan
 
 
@@ -475,7 +475,7 @@ curl https://get.datree.io | /bin/bash
 ## Usage
 datree test helmtemplate.yaml --schema-version 1.19.0
 
-Have some false positives ensume deployment has more than one replica so I configured the makefile to not stop on error at datree
+Have some false positives on deployment has more than one replica (which is done by hpa) so I configured the makefile to not stop on error at datree
 
 
 # yara:
