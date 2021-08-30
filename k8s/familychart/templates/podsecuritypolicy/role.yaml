@@ -15,4 +15,4 @@ rules:
   resources: ['podsecuritypolicies']
   verbs:     ['use']
   resourceNames:
-  - <list of policies to authorize>
+  - "{{ .Release.Name }}-podsecuritypolicy"
