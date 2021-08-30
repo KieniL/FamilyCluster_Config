@@ -137,7 +137,7 @@ Runs following tools against the helm release
 * helm conftest
 
 ## dynamicscan
-Runs the fullscan and apiscan from owasp zap
+Runs wafw00f on frontend and the fullscan and apiscan from owasp zap
 ## unittest
 Deploys a k8s release with helm and runs the single tests on auth, ansparen and cert
 ## integrationtest
@@ -384,13 +384,17 @@ No WAF was detected
 Then I added modsecurity to the ingress:
 
 annotations:
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/modsecurity-transaction-id: "$request_id"
-    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
-    nginx.ingress.kubernetes.io/enable-owasp-core-rules: "true"
-    enable-owasp-modsecurity-crs: "true"
+  kubernetes.io/ingress.class: nginx
+  nginx.ingress.kubernetes.io/modsecurity-transaction-id: "$request_id"
+  nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+  nginx.ingress.kubernetes.io/enable-owasp-core-rules: "true"
+  nginx.ingress.kubernetes.io/enable-owasp-modsecurity-crs: "true"
+  nginx.ingress.kubernetes.io/limit-rps: "{{ .Values.ingress.limitrps }}"
+  nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  nginx.ingress.kubernetes.io/modsecurity-snippet: |
+    SecRuleEngine On
 
-It is still not found by wafw00f
+It is now found by wafw00f
 
 
 # helm docs

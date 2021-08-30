@@ -137,11 +137,17 @@ k8scheck:
 
 
 dynamicscan:
-	rm zap_fullscan_report.html || true
-	rm zap_apiscan_report.html || true
-	docker pull owasp/zap2docker-stable
+	@rm zap_fullscan_report.html || true
+	@rm zap_apiscan_report.html || true
+	@rm wafw00f.txt || true
+	@echo "\nRun WAF Detection\n"
+	@wafw00f https://frontend.kieni.at -a -o wafw00f.txt | cat | if grep "No WAF detected by the generic detection"; then echo "enable waf on ingress to not fail";exit 1; fi;
+	@docker pull owasp/zap2docker-stable
+	@echo "\nRun ZAP on Frontend\n"
 	docker run -v $(shell pwd):/zap/wrk/:rw --net=host --rm -t owasp/zap2docker-stable zap-full-scan.py -t https://frontend.kieni.at/frontend -r zap_fullscan_report.html -I
+	@echo "\nRun ZAP on API\n"
 	docker run -v $(shell pwd):/zap/wrk/:rw --net=host --rm -t owasp/zap2docker-stable zap-api-scan.py -t https://frontend.kieni.at/api -f openapi -r zap_apiscan_report.html -I
+	@echo "\nDynamicscanning completed\n"
 
 unittest:
 	@helm upgrade --install unittest k8s/familychart/ -n unittest --create-namespace --set storage.db.persistance_needed=false --set installer.deploy=true --set installer.dummy_data=true --set ingress.url=unittest.kieni.at --set ansparen.deploy=true --set cert.deploy=true --set auth.deploy=true  --set api.deploy=false --set frontend.deploy=false --set tests.deploy=true --wait
