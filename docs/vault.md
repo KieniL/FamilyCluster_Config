@@ -11,3 +11,7 @@ I created a admin secret for installer
 I created a serviceaccount for installer
 I created a policy to have read access on each of the three secrets,
 I created a kubernets auth role name installer for the namespaces and servicaccountnames
+
+I created a serviceaccount for mysql
+I created a policy to have read access on each on the admin secrets
+I created a kubernets auth role name mysql for the namespaces and servicaccountnames

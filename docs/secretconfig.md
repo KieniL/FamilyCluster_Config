@@ -23,7 +23,7 @@ data:
   tls.key: base64 encoded key
 
 ## Installer secret
-The secret used by the installer
+The secret used by the test for db connection
 
 ```yaml
 {{ if .Values.installer.deploy }}
@@ -55,24 +55,4 @@ stringData:
   CERT_USER: USER
   CERT_PASS: PASS
 {{ end }}
-```
-## mysql secret
-The root password for mysql
-
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: "{{ .Release.Name }}-mysql-secret"
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/name: "{{ .Release.Name }}-mysql-secret"
-    app.kubernetes.io/instance: "{{ .Release.Name }}-mysql-secret"
-    app.kubernetes.io/version: "1.0"
-    app.kubernetes.io/component: secret
-    app.kubernetes.io/part-of: familyapp
-    app.kubernetes.io/managed-by: helm
-type: Opaque
-stringData:
-    MYSQL_PASSWORD: "PW"
 ```

@@ -33,9 +33,21 @@ spec:
       annotations:
         seccomp.security.alpha.kubernetes.io/pod: runtime/default
         container.apparmor.security.beta.kubernetes.io/mysql: runtime/default
+        # AGENT INJECTOR SETTINGS
+        vault.hashicorp.com/agent-inject: 'true'
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/agent-run-as-same-user: "true"
+        # DB Secrets
+        vault.hashicorp.com/agent-inject-secret-db_admin_password: "k8s_secrets/family/admin"
+        vault.hashicorp.com/agent-inject-command-db_admin_password: "sh -c 'kill -HUP 1"
+        vault.hashicorp.com/agent-inject-template-db_admin_password: |
+          {{`{{- with secret "k8s_secrets/family/admin" -}}
+            {{ .Data.password }}
+          {{- end }}`}}
+        # VAULT SETTINGS
+        vault.hashicorp.com/role: 'mysql-app'
     spec:
-      automountServiceAccountToken: false
-      serviceAccountName: default
+      serviceAccountName: {{ .Release.Name }}-mysql-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -100,13 +112,10 @@ spec:
             mountPath: /etc/mysql/conf.d/mysql.cnf
             subPath: default_bind
           - name: tmp
-            mountPath: /tmp 
-          - name: pw-volume
-            mountPath: /etc/config/
-            readOnly: true
+            mountPath: /tmp
           env:
           - name: MYSQL_ROOT_PASSWORD_FILE
-            value: /etc/config/MYSQL_PASSWORD
+            value: /vault/secrets/db_admin_password
       volumes:
       - name: mysql-config-volume
         configMap:
@@ -120,9 +129,6 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 200Mi
-      - name: pw-volume
-        secret:
-          secretName: "{{ .Release.Name }}-mysql-secret"
 ---
 apiVersion: v1
 kind: Service
