@@ -4,5 +4,6 @@ package main
 serviceaccount_needed = [
   "unittest-ansparservice",
   "unittest-authservice",
-  "unittest-certservice"
+  "unittest-certservice",
+  "unittest-mysql"
 ]
