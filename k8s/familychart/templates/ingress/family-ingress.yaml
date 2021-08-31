@@ -20,6 +20,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On
+      SecRule REQUEST_URI "@beginsWith /api" "phase:1,id:12345,allow"
 spec:
   tls:
   - hosts:
