@@ -4,6 +4,8 @@ dockercheck_all: dockercheck_base dockercheck_family dockerhostcheck
 	
 
 dockercheck_base:
+	dockerfilelint ../../DevOps/base_images/*/*
+	
 # False positives on dpkg-query so I had to disable it for automatic check
 #	dockerlint -p -f ../../DevOps/base_images/mavenchrome/Dockerfile
 	dockerfile_lint -u -f  ../../DevOps/base_images/mavenchrome/Dockerfile
@@ -25,6 +27,9 @@ dockercheck_base:
 	conftest test ../../DevOps/base_images/*/Dockerfile
 
 dockercheck_family:
+
+	dockerfilelint ../* -o cli
+
 	dockerlint -p -f ../FamilyCluster_Api/Dockerfile
 	dockerfile_lint -u -f  ../FamilyCluster_Api/Dockerfile
 
