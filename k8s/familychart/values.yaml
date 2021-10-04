@@ -200,6 +200,8 @@ ingress:
   url: frontend.kieni.at
   # -- the amount of allowed connections from an ip per second
   limitrps: 5
+  # -- the amount of allowed connection from an ip per minute
+  limitrpm: 30
 
 tests:
   # -- set to true if the testconfigmap should be deployed too

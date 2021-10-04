@@ -18,7 +18,7 @@ A Helm chart for my familyapp
 | ansparen.resources.memory_limit | string | `"512Mi"` | the memory limit for the ansparen pod |
 | ansparen.resources.memory_request | string | `"256Mi"` | the memory request for the ansparen pod |
 | api.deploy | bool | `true` | defines if the api deployment should be deployed |
-| api.image | string | `"sha256:4c7fa96c70e944b008beb84311ba93eddc73a7c9917d37f71d0e3e9aae227bbe"` | the image tag of the api deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
+| api.image | string | `"sha256:b09d430e95e4f28c3cd77af4f2adc1b336225fea5bb57c8953d800423a1bfeb4"` | the image tag of the api deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
 | api.resources.cpu_limit | string | `"750m"` | the cpu limit for the api pod |
 | api.resources.cpu_request | string | `"150m"` | the cpu request for the api pod |
 | api.resources.hpa.cpu_utilization | int | `60` | the amount of cpu utilization to check for scaling |
@@ -27,7 +27,7 @@ A Helm chart for my familyapp
 | api.resources.memory_limit | string | `"512Mi"` | the memory limit for the api pod |
 | api.resources.memory_request | string | `"256Mi"` | the memory request for the api pod |
 | auth.deploy | bool | `true` | defines if the authentication deployment should be deployed |
-| auth.image | string | `"sha256:a5c66deb22a74abb5cd644bb5a0209d3706551fb303144df8079ff18b0799f91"` | the image tag of the authentication deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
+| auth.image | string | `"sha256:58bab6f753a23ec8473aab55d72a48e03435dfba5d3274e19ca22e7f0a8681a3"` | the image tag of the authentication deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
 | auth.resources.cpu_limit | string | `"1000m"` | the cpu limit for the authentication pod |
 | auth.resources.cpu_request | string | `"150m"` | the cpu request for the authentication pod |
 | auth.resources.hpa.cpu_utilization | int | `60` | the amount of cpu utilization to check for scaling |
@@ -45,7 +45,7 @@ A Helm chart for my familyapp
 | cert.resources.memory_limit | string | `"512Mi"` | the memory limit for the certification pod |
 | cert.resources.memory_request | string | `"256Mi"` | the memory request for the certification pod |
 | frontend.deploy | bool | `true` | defines if the frontend deployment should be deployed |
-| frontend.image | string | `"sha256:a96979321ae91a2b3a5c410e56f62dc92282b9960c2ac7381ee1da9c8245ba6e"` | the image tag of the frontend deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
+| frontend.image | string | `"sha256:c36cc8e80acd1449f67bbea8f07e0bbe675bc2f3b1363cd7e013934404eb07ef"` | the image tag of the frontend deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
 | frontend.resources.cpu_limit | string | `"750m"` | the cpu limit for the frontend pod |
 | frontend.resources.cpu_request | string | `"150m"` | the cpu request for the frontend pod |
 | frontend.resources.hpa.cpu_utilization | int | `60` | the amount of cpu utilization to check for scaling |
@@ -53,12 +53,13 @@ A Helm chart for my familyapp
 | frontend.resources.hpa.min_replica | int | `1` | the min replicas for frontend |
 | frontend.resources.memory_limit | string | `"512Mi"` | the memory limit for the frontend pod |
 | frontend.resources.memory_request | string | `"256Mi"` | the memory request for the frontend pod |
+| ingress.limitrpm | int | `30` | the amount of allowed connection from an ip per minute |
 | ingress.limitrps | int | `5` | the amount of allowed connections from an ip per second |
 | ingress.tls.secret | string | `"tls-secret"` | the secret in the namespace for the ingress tls |
 | ingress.url | string | `"frontend.kieni.at"` | the hostname for the ingress |
 | installer.deploy | bool | `false` | defines if the installer job should be deployed |
 | installer.dummy_data | bool | `false` | sets if the dummy_data should be added to the database |
-| installer.image | string | `"sha256:01e0c99e4c1fb6065873aacd408db0468b9ec3c29fdc0a98c79df2907bd7c0de"` | the image tag of the installer (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
+| installer.image | string | `"sha256:b529fd4294c06e2f6a58195a1eacd41d9b9a812d81797f7c1214aa274b995660"` | the image tag of the installer (a digest is used to have a unique identifier when an imagetag is pushed multiple times) |
 | installer.resources.cpu_limit | string | `"1000m"` | the cpu limit for the installer pod |
 | installer.resources.cpu_request | string | `"150m"` | the cpu request for the installer pod |
 | installer.resources.memory_limit | string | `"512Mi"` | the memory limit for the installer pod |

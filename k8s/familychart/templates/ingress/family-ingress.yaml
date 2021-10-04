@@ -17,6 +17,7 @@ metadata:
     nginx.ingress.kubernetes.io/enable-owasp-core-rules: "true"
     nginx.ingress.kubernetes.io/enable-owasp-modsecurity-crs: "true"
     nginx.ingress.kubernetes.io/limit-rps: "{{ .Values.ingress.limitrps }}"
+    nginx.ingress.kubernetes.io/limit-rpm: "{{ .Values.ingress.limitrpm }}"
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/modsecurity-snippet: |
       SecRuleEngine On

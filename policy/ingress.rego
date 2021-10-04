@@ -41,5 +41,21 @@ deny[msg] {
   not annotations["nginx.ingress.kubernetes.io/limit-rps"]
   not annotations["nginx.ingress.kubernetes.io/limit-rpm"]
 
-  msg := sprintf("ingress %v needs to have a limit-per-seconds or limit-per-minutes to mitigate DDoS. See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#rate-limiting", [name])
+  msg := sprintf("ingress %v needs to have a limit-per-seconds and limit-per-minutes to mitigate DDoS. See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#rate-limiting", [name])
+}
+
+deny[msg] {
+  kubernetes.is_ingress
+  annotations["nginx.ingress.kubernetes.io/limit-rps"]
+  not annotations["nginx.ingress.kubernetes.io/limit-rpm"]
+
+  msg := sprintf("ingress %v only has limit-rps needs to have a limit-per-seconds and limit-per-minutes to mitigate DDoS. See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#rate-limiting", [name])
+}
+
+deny[msg] {
+  kubernetes.is_ingress
+  not annotations["nginx.ingress.kubernetes.io/limit-rps"]
+  annotations["nginx.ingress.kubernetes.io/limit-rpm"]
+
+  msg := sprintf("ingress %v only has limit-rpm needs to have a limit-per-seconds and limit-per-minutes to mitigate DDoS. See https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#rate-limiting", [name])
 }
