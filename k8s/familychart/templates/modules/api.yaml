@@ -59,6 +59,8 @@ spec:
         runAsUser: 20000
         runAsGroup: 20000
         runAsNonRoot: true
+        seLinuxOptions:
+          level: "s0:c123,c456"
       containers:
       - name:  "{{ .Release.Name }}-apiservice"
         image: luke19/familyapiservice@{{ .Values.api.image }}
@@ -73,6 +75,8 @@ spec:
           capabilities:
             drop:
               - all
+          seLinuxOptions:
+            level: "s0:c123,c456"
         volumeMounts:
         - mountPath: /app/tmp
           name: tmp

@@ -97,6 +97,8 @@ spec:
         runAsUser: 20000
         runAsGroup: 20000
         runAsNonRoot: true
+        seLinuxOptions:
+          level: "s0:c123,c456"
       containers:
       - name:  "{{ .Release.Name }}-installer"
         image: luke19/familycluster_installer@{{ .Values.installer.image }}
@@ -109,6 +111,8 @@ spec:
           capabilities:
             drop:
               - all
+          seLinuxOptions:
+            level: "s0:c123,c456"
         resources:
           limits:
             memory: "{{ .Values.installer.resources.memory_limit }}"

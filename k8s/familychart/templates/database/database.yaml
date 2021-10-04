@@ -65,6 +65,8 @@ spec:
         runAsUser: 20000
         runAsGroup: 20000
         runAsNonRoot: true
+        seLinuxOptions:
+          level: "s0:c123,c456"
       containers:
         - name: mysql
           image: luke19/mysql-base-image@{{ .Values.storage.db.image }}
@@ -86,6 +88,8 @@ spec:
             capabilities:
               drop:
               - all
+            seLinuxOptions:
+              level: "s0:c123,c456"
           ports:
           - containerPort: 3306
             name: mysql
