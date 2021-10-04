@@ -1,4 +1,4 @@
-{{ if .Values.api.deploy }}
+{{ if .Values.auth.deploy }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
