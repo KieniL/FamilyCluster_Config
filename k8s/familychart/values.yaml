@@ -70,7 +70,7 @@ auth:
   # -- defines if the authentication deployment should be deployed
   deploy: true
   # -- the image tag of the authentication deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
-  image: "sha256:58bab6f753a23ec8473aab55d72a48e03435dfba5d3274e19ca22e7f0a8681a3"
+  image: "sha256:ba4f9ccfd62e2cbfe4bd5ee87c5fca951b51ba7dacb193a83662bd7eea6cfc33"
   resources:
     # -- the memory limit for the authentication pod
     memory_limit: 512Mi

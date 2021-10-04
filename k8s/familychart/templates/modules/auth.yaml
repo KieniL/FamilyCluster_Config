@@ -53,7 +53,11 @@ spec:
           spring.jpa.hibernate.ddl-auto = update
           companyName=${COMPANY_NAME}
           logging.level.com.kienast.authservice=${AUTH_LOG_LEVEL}
-          secListLocation=${SECLIST_LOCATION}
+          commonCredentialsLocation=${COMMON_CREDENTIALS_LOCATION}
+          leakedDatabasePasswordsLocation=${LEADKED_DATABASE_PASSWORDS_LOCATION}
+          topUsernamesLocation=${TOP_USERNAMES_LOCATION}
+          leakedUsernamesLocation=${LEAKED_USERNAMES_LOCATION}
+          customPasswordsLocation=${CUSTOM_PASSWORDS_LOCATION}
           {{- end }}`}}
         # VAULT SETTINGS
         vault.hashicorp.com/role: 'auth-app'
@@ -154,6 +158,11 @@ spec:
             configMapKeyRef:
               name: "{{ .Release.Name }}-config"
               key: AUTH_LEAKED_USERNAMES_LOCATION
+        - name: CUSTOM_PASSWORDS_LOCATION
+          valueFrom:
+            configMapKeyRef:
+              name: "{{ .Release.Name }}-config"
+              key: AUTH_CUSTOM_PASSWORDS_LOCATION
         ports:
         - containerPort: 8080 #Expose containerport to the pod
         livenessProbe: #Check that pod is ready

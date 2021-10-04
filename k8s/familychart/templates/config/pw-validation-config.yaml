@@ -12,6 +12,8 @@ metadata:
     app.kubernetes.io/part-of: familyapp
     app.kubernetes.io/managed-by: helm
 data:
+  custompasswords.txt: |
+    kienast
   commoncredentials.txt: |
     123456
     password

@@ -34,60 +34,63 @@
 - [dockerfilelint](#dockerfilelint)
   - [Installation](#installation-5)
   - [usage](#usage-5)
+- [kics](#kics)
+  - [Installation](#installation-6)
+  - [usage](#usage-6)
 - [Image Scanning](#image-scanning)
   - [Snyk](#snyk)
   - [Trivy](#trivy)
-    - [Installation:](#installation-6)
-    - [usage](#usage-6)
+    - [Installation:](#installation-7)
+    - [usage](#usage-7)
       - [Parse based on helm input:](#parse-based-on-helm-input)
   - [Clair](#clair)
-    - [Installation:](#installation-7)
-    - [Usage:](#usage-7)
+    - [Installation:](#installation-8)
+    - [Usage:](#usage-8)
       - [Destroy env:](#destroy-env)
   - [Anchore](#anchore)
 - [WAF](#waf)
 - [helm docs](#helm-docs)
 - [Kubesec](#kubesec)
-  - [Installation](#installation-8)
-  - [Usage:](#usage-8)
-- [Kubeaudit](#kubeaudit)
   - [Installation](#installation-9)
-  - [Usage](#usage-9)
-- [Checkov](#checkov)
+  - [Usage:](#usage-9)
+- [Kubeaudit](#kubeaudit)
   - [Installation](#installation-10)
-  - [Usage:](#usage-10)
-- [Terrascan](#terrascan)
+  - [Usage](#usage-10)
+- [Checkov](#checkov)
   - [Installation](#installation-11)
-  - [usage](#usage-11)
+  - [Usage:](#usage-11)
+- [Terrascan](#terrascan)
+  - [Installation](#installation-12)
+  - [usage](#usage-12)
   - [Disclaimer](#disclaimer)
 - [Datree](#datree)
-  - [Installation:](#installation-12)
-  - [Usage](#usage-12)
-- [yara:](#yara)
-  - [Installation](#installation-13)
+  - [Installation:](#installation-13)
   - [Usage](#usage-13)
-- [yarGen](#yargen)
+- [yara:](#yara)
   - [Installation](#installation-14)
   - [Usage](#usage-14)
-- [kube-bench](#kube-bench)
+- [yarGen](#yargen)
+  - [Installation](#installation-15)
   - [Usage](#usage-15)
+- [kube-bench](#kube-bench)
+  - [Usage](#usage-16)
     - [Docker](#docker)
 - [kube-hunter](#kube-hunter)
-  - [Usage](#usage-16)
+  - [Usage](#usage-17)
     - [Docker](#docker-1)
     - [Kubernetes see security folder under k8s/familychart](#kubernetes-see-security-folder-under-k8sfamilychart)
 - [kube-linter](#kube-linter)
-  - [Installation](#installation-15)
-  - [Usage](#usage-17)
-- [kube-scape](#kube-scape)
   - [Installation](#installation-16)
   - [Usage](#usage-18)
-- [Docker-bench](#docker-bench)
+- [kube-scape](#kube-scape)
   - [Installation](#installation-17)
   - [Usage](#usage-19)
-- [ffuf](#ffuf)
+- [Docker-bench](#docker-bench)
   - [Installation](#installation-18)
   - [Usage](#usage-20)
+- [ffuf](#ffuf)
+  - [Installation](#installation-19)
+  - [Usage](#usage-21)
 
 # Toolusage 
 
@@ -287,6 +290,20 @@ npm install -g dockerfilelint
 dockerfilelint ../* -o cli
 
 Checks Dockerfiles and other files in the directory (like java code)
+
+
+# kics
+
+## Installation
+Install with:
+wget https://github.com/Checkmarx/kics/releases/download/v1.4.4/kics_1.4.4_linux_x64.tar.gz
+tar xvzf kics_1.4.4_linux_x64.tar.gz
+sudo cp kics /usr/local/bin/kics
+
+## usage
+kics scan -p helmtemplate.yaml
+
+Runs static testing against all kind of iac configurations. Auto detects possible providers
 # Image Scanning
 Will be run on make imagescan
 

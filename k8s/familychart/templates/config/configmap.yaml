@@ -31,3 +31,4 @@ data:
   AUTH_LEADKED_DATABASE_PASSWORDS_LOCATION: /pw_validations/leakedpasswords.txt
   AUTH_TOP_USERNAMES_LOCATION: /pw_validations/topusernames.txt
   AUTH_LEAKED_USERNAMES_LOCATION: /pw_validations/leakedusernames.txt
+  AUTH_CUSTOM_PASSWORDS_LOCATION: /pw_validations/custompasswords.txt
