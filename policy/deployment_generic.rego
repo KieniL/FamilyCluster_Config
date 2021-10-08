@@ -190,6 +190,22 @@ deny[msg] {
 
 deny[msg] {
   kubernetes.is_deployment
+  imagetag := split(input.spec.template.spec.containers[_].image, "@")
+  count(imagetag) == 1
+
+  msg := sprintf("imagetags are used instead of hash for deployment %v", [name])
+}
+
+deny[msg] {
+  kubernetes.is_deployment
+  imagetag := split(input.spec.template.spec.containers[_].image, "@")[1]
+  not startswith(imagetag, "sha256")
+
+  msg := sprintf("use sha256 instead of tagname to prevent usage of multiple pushed images for deployment %v", [name])
+}
+
+deny[msg] {
+  kubernetes.is_deployment
   container := template_spec.containers[_]
   container.securityContext.privileged == true
 

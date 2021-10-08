@@ -155,6 +155,7 @@ dynamicscan:
 	@echo "\nDynamicscanning completed\n"
 
 unittest:
+	@helm upgrade --install credval k8s/credvalidate --values k8s/credvalidate/values.yaml --wait
 	@helm upgrade --install unittest k8s/familychart/ -n unittest --create-namespace --set storage.db.persistance_needed=false --set installer.deploy=true --set installer.dummy_data=true --set ingress.url=unittest.kieni.at --set ansparen.deploy=true --set cert.deploy=true --set auth.deploy=true  --set api.deploy=false --set frontend.deploy=false --set tests.deploy=true --wait
 	@kubectl delete job unittest-installer -n unittest
 	@echo "\nTest DB Connection\n"
@@ -168,6 +169,7 @@ unittest:
 
 
 integrationtest:
+	@helm upgrade --install credval k8s/credvalidate --values k8s/credvalidate/values.yaml --wait
 	@helm upgrade --install integrationtest k8s/familychart/ -n integrationtest --create-namespace --set storage.db.persistance_needed=false --set installer.deploy=true --set installer.dummy_data=true --set ingress.url=integrationtest.kieni.at --set ansparen.deploy=true --set cert.deploy=true --set auth.deploy=true  --set api.deploy=true --set frontend.deploy=false --set tests.deploy=true --wait
 	@kubectl delete job integrationtest-installer -n integrationtest
 	@echo "\nTest DB Connection\n"

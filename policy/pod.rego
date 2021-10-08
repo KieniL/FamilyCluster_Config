@@ -162,6 +162,22 @@ deny[msg] {
 
 deny[msg] {
   kubernetes.is_pod
+  imagetag := split(containers[_].image, "@")
+  count(imagetag) == 1
+
+  msg := sprintf("imagetags are used instead of hash for pod %v", [name])
+}
+
+deny[msg] {
+  kubernetes.is_pod
+  imagetag := split(containers[_].image, "@")[1]
+  not startswith(imagetag, "sha256")
+
+  msg := sprintf("use sha256 instead of tagname to prevent usage of multiple pushed images for pod %v", [name])
+}
+
+deny[msg] {
+  kubernetes.is_pod
   not exists_in_list(name, serviceaccount_needed)
   not spec.automountServiceAccountToken == false
 

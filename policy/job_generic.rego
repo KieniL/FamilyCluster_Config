@@ -145,6 +145,22 @@ deny[msg] {
 
 deny[msg] {
   kubernetes.is_job
+  imagetag := split(input.spec.template.spec.containers[_].image, "@")
+  count(imagetag) == 1
+
+  msg := sprintf("imagetags are used instead of hash for job %v", [name])
+}
+
+deny[msg] {
+  kubernetes.is_job
+  imagetag := split(input.spec.template.spec.containers[_].image, "@")[1]
+  not startswith(imagetag, "sha256")
+
+  msg := sprintf("use sha256 instead of tagname to prevent usage of multiple pushed images for job %v", [name])
+}
+
+deny[msg] {
+  kubernetes.is_job
   not exists_in_list(name, serviceaccount_needed)
   not template_spec.automountServiceAccountToken == false
 

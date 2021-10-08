@@ -118,6 +118,22 @@ warn[msg] {
     msg = sprintf("Do not use latest tag with image: %s", [input[i].Value])
 }
 
+deny[msg] {
+  docker.is_from(input[i].Cmd)
+  imagetag := split(input[i].Value[0], "@")
+  count(imagetag) == 1
+
+  msg := sprintf("imagetags are used instead of hash for image %v", [name])
+}
+
+deny[msg] {
+  docker.is_from(input[i].Cmd)
+  imagetag := split(input[i].Value[0], "@")[1]
+  not startswith(imagetag, "sha256")
+
+  msg := sprintf("use sha256 instead of tagname to prevent usage of multiple pushed images for image %v", [name])
+}
+
 # Looking for apk upgrade command used in Dockerfile
 warn[msg] {
     docker.is_run(input[i].Cmd)
