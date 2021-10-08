@@ -8,6 +8,9 @@ I installed kubectl additionally to use the kubectl commands directly instead of
 # How to deploy
 Create the secrets as defined in secretconfig.md
 
+deploy the configmap like so:
+helm upgrade --install credval k8s/credvalidate --values k8s/credvalidate/values.yaml
+
 deploy the app like so:
 helm upgrade --install familyapp k8s/familychart --values k8s/familychart/values.yaml
 

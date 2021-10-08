@@ -80,7 +80,7 @@ spec:
           sizeLimit: 200Mi
       - name: pw-validation-volume
         configMap:
-          name:  "{{ .Release.Name }}-pw-validation-configmap"
+          name:  "{{ .Release.Namespace }}-pw-validation-configmap"
       securityContext:
         runAsUser: 20000
         runAsGroup: 20000
