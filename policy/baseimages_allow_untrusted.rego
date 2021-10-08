@@ -1,6 +1,6 @@
 package main
 
-baseimages_allow_untrusted = [
+baseimages_exceptions = [
 	"adoptopenjdk/openjdk13:x86_64-alpine-jre13u-nightly",
   "markhobson/maven-chrome:jdk-11",
   "mysql:8.0.26",

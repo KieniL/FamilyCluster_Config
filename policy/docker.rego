@@ -54,9 +54,9 @@ deny_trusted_registry[msg] {
 # images in this list are allowed to have an untrusted baseimage
 exception[rules] {
   docker.is_from(input[i].Cmd)
-  exists_in_list(input[i].Value[0], baseimages_allow_untrusted)
+  exists_in_list(input[i].Value[0], baseimages_exceptions)
 
-  rules := ["trusted_registry"]
+  rules := ["trusted_registry", "at_used", "sha256"]
 }
 
 #check that no cmd is used
@@ -118,20 +118,20 @@ warn[msg] {
     msg = sprintf("Do not use latest tag with image: %s", [input[i].Value])
 }
 
-deny[msg] {
+deny_at_used[msg] {
   docker.is_from(input[i].Cmd)
   imagetag := split(input[i].Value[0], "@")
-  count(imagetag) == 1
+  not count(imagetag) == 0
 
-  msg := sprintf("imagetags are used instead of hash for image %v", [name])
+  msg := sprintf("imagetags are used instead of hash for image %v", [input[i].Value])
 }
 
-deny[msg] {
+deny_sha256[msg] {
   docker.is_from(input[i].Cmd)
   imagetag := split(input[i].Value[0], "@")[1]
   not startswith(imagetag, "sha256")
 
-  msg := sprintf("use sha256 instead of tagname to prevent usage of multiple pushed images for image %v", [name])
+  msg := sprintf("use sha256 instead of tagname to prevent usage of multiple pushed images for image %v", [input[i].Value])
 }
 
 # Looking for apk upgrade command used in Dockerfile
