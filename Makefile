@@ -136,6 +136,7 @@ k8scheck:
 	kube-linter lint helmtemplate.yaml --add-all-built-in --exclude minimum-three-replicas
 	helm conftest unittest k8s/familychart/
 	kubescape scan framework nsa --exclude-namespaces kube-system,kube-public
+	kubescape scan framework mitre --exclude-namespaces kube-system,kube-public
 	rm helmtemplate.yaml
 
 
