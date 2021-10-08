@@ -1,0 +1,1 @@
+Configmap {{ .Release.Namespace }}-pw-validation-configmap is released in {{ .Release.Namespace }}

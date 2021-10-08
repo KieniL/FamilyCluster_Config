@@ -1,15 +1,14 @@
-{{ if .Values.auth.deploy }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ .Release.Name }}-pw-validation-configmap"
+  name: {{ .Release.Namespace }}-pw-validation-configmap
   namespace: {{ .Release.Namespace }}
   labels:
-    app.kubernetes.io/name: "{{ .Release.Name }}-pw-validation-configmap"
-    app.kubernetes.io/instance: "{{ .Release.Name }}-pw-validation-configmap"
+    app.kubernetes.io/name: {{ .Release.Namespace }}-pw-validation-configmap
+    app.kubernetes.io/instance: {{ .Release.Namespace }}-pw-validation-configmap
     app.kubernetes.io/version: "1.0"
     app.kubernetes.io/component: configmap
-    app.kubernetes.io/part-of: familyapp
+    app.kubernetes.io/part-of: {{ .Release.Namespace }}-pw-validation-configmap
     app.kubernetes.io/managed-by: helm
 data:
   custompasswords.txt: |
@@ -70398,4 +70397,3 @@ data:
     zyg
     zygmunt
     zylen
-{{ end }}
