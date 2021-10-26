@@ -24,7 +24,7 @@ ansparen:
   # -- defines if the ansparen deployment should be deployed
   deploy: true
   # -- the image tag of the ansparen deployment (a digest is used to have a unique identifier when an imagetag is pushed multiple times)
-  image: "sha256:b9a132f7e61010cc41dcb5a92e3b72f2d7baa64d4d0cb0aa822711fbccc2e442"
+  image: "sha256:bc4e6da1728b94420600b3cf830650010595b99bd42e30872866700e55501332"
   resources:
     # -- the memory limit for the ansparen pod
     memory_limit: 512Mi

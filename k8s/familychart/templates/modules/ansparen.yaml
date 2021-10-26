@@ -55,6 +55,12 @@ spec:
           logging.level.com.kienast.ansparservice = ${ANSPAREN_LOG_LEVEL}
           authURL = ${AUTH_URL}
           {{- end }}`}}
+        # PoC to inject into env variables args is then used to have it in the java process
+        vault.hashicorp.com/agent-inject-secret-poc: "k8s_secrets/family/anspardb"
+        vault.hashicorp.com/agent-inject-template-poc: |
+          {{`{{- with secret "k8s_secrets/family/anspardb" -}}
+            export POC={{ .Data.db }}
+          {{- end }}`}}
         # VAULT SETTINGS
         vault.hashicorp.com/role: 'ansparen-app'
     spec:
@@ -83,6 +89,9 @@ spec:
       containers:
       - name:  "{{ .Release.Name }}-ansparservice"
         image: luke19/familyansparservice@{{ .Values.ansparen.image }}
+        command: ["/bin/sh"]
+        args:
+          ['-c', 'source /vault/secrets/poc && sh /app/entrypoint.sh']
         imagePullPolicy: Always
         securityContext:
           allowPrivilegeEscalation: false
