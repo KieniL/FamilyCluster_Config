@@ -83,6 +83,7 @@ jobs:
         --compact \
         -f /helm/helmtemplate.yaml \
         -o junitxml
+        -s
         
   final:
     needs: [test_trivy_low_med_high, test_trivy_crit, test_checkov]
