@@ -26,11 +26,11 @@ jobs:
     - uses: actions/upload-artifact@master
       with:
         name: helmvalues
-        path: helmvalues.yaml
+        path: ./helmvalues.yaml
     - uses: actions/upload-artifact@master
       with:
         name: helmtemplate
-        path: helmtemplate.yaml
+        path: ./helmtemplate.yaml
       
   test_trivy_low_med_high:
     needs: inital-setup
@@ -41,7 +41,7 @@ jobs:
     - uses: actions/download-artifact@master
       with:
         name: helmvalues
-        path: helmvalues.yaml
+        path: ./helmvalues.yaml
     - name: Run trivy on low,medium high
       run: |
         cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
@@ -66,7 +66,7 @@ jobs:
     - uses: actions/download-artifact@master
       with:
         name: helmvalues
-        path: helmvalues.yaml
+        path: ./helmvalues.yaml
     - name: Run trivy on high
       run: |        
         cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
@@ -91,7 +91,7 @@ jobs:
     - uses: actions/download-artifact@master
       with:
         name: helmtemplate
-        path: helmtemplate.yaml
+        path: ./helmtemplate.yaml
     - name: Run checkov
       run: |
         docker run --rm -t \
