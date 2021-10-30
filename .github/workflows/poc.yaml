@@ -11,37 +11,27 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       date: ${{ steps.step1.outputs.date }}
-      helmvalues: ${{ steps.step1.outputs.helmvalues }}
-      helmtemplate: ${{ steps.step1.outputs.helmtemplate }}
     steps:
     - uses: actions/checkout@v2
     
     - id: step1
       name: Provided necessary things
       run: |
-        helm show values k8s/familychart/ > helmvalues.yaml
-        helm template familyapp k8s/familychart/ --skip-tests --values k8s/familychart/values.yaml > helmtemplate.yaml
-        mkdir -p tests
         DATE_TMP=$(date +%s)
         echo "DATE=$DATE_TMP" >> $GITHUB_ENV
         echo "::set-output name=date::$DATE_TMP"
-        echo "::set-output name=helmvalues::$(helmvalues)"
-    
-  job2:
-    runs-on: ubuntu-latest
-    needs: inital-setup
-    steps:
-      - run: echo ${{needs.inital-setup.outputs.helmvalues}} ${{needs.inital-setup.outputs.date}}
       
   test_trivy_low_med_high:
     needs: inital-setup
     runs-on: ubuntu-latest
 
     steps:
-    
+    - uses: actions/checkout@v2
     - name: Run trivy on low,medium high
       run: |
-        ${{needs.inital-setup.outputs.helmvalues}} | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
+        helm show values k8s/familychart/ > helmvalues.yaml
+         
+        cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
         docker run --rm \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $HOME/Library/Caches:/root/.cache/ \
@@ -59,9 +49,12 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - uses: actions/checkout@v2
     - name: Run trivy on high
       run: |
-        ${{needs.inital-setup.outputs.helmvalues}} | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
+        helm show values k8s/familychart/ > helmvalues.yaml
+        
+        cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
         docker run --rm \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $HOME/Library/Caches:/root/.cache/ \
@@ -98,6 +91,7 @@ jobs:
     steps:
     - name: Move every result in test folder
       run: |
+        mkdir -p tests
         mv junit-report-low-med-high_${{ env.DATE }}.xml tests/junit-report-low-med-high_${{ env.DATE }}.xml
         mv junit-report-crit_${{ env.DATE }}.xml tests/junit-report-crit_${{ env.DATE }}.xml
         
