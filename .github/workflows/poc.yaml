@@ -92,7 +92,6 @@ jobs:
   test_docker_conftest:
     needs: inital-setup
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
     - uses: actions/checkout@v2
     
@@ -193,7 +192,7 @@ jobs:
     - name: Run checkov
       run: |
         docker run --rm -t \
-        -v"$(pwd):/helm" \
+        -v "$(pwd):/helm" \
         bridgecrew/checkov \
         --quiet \
         --compact \
@@ -222,7 +221,7 @@ jobs:
     - name: Run datree
       run: |
         docker run --rm \
-        -v"$(pwd):/helm" \
+        -v "$(pwd):/helm" \
         -i datree/datree \
         test /helm/helmtemplate.yaml \
         --schema-version 1.21.0 \
@@ -239,7 +238,6 @@ jobs:
   test_helm_conftest:
     needs: inital-setup
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
     - uses: actions/checkout@v2
 
@@ -264,14 +262,83 @@ jobs:
         name: helm_conftest
         path: ./helm_conftest.xml
         if-no-files-found: error
+
+  test_kubescape_nsa:
+    needs: inital-setup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: download helmtemplate
+      uses: actions/download-artifact@master
+      with:
+        name: helmtemplate
+
+    - name: Run kubescape_nsa
+      run: |
+        docker run --rm \
+        -v $(pwd):/helm \
+        -i quay.io/armosec/kubescape \
+        scan framework nsa \
+        /helm/helmtemplate.yaml \
+        --keep-local \
+        --format junit \
+        --silent \
+        --output /helm/kubescape_nsa.xml
+    
+    - name: upload datree testresult
+      uses: actions/upload-artifact@master
+      with:
+        name: kubescape_nsa
+        path: ./kubescape_nsa.xml
+        if-no-files-found: error
+
+  test_kubescape_mitre:
+    needs: inital-setup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: download helmtemplate
+      uses: actions/download-artifact@master
+      with:
+        name: helmtemplate
+
+    - name: Run kubescape_mitre
+      run: |
+        docker run --rm \
+        -v $(pwd):/helm \
+        -i quay.io/armosec/kubescape \
+        scan framework mitre \
+        /helm/helmtemplate.yaml \
+        --keep-local \
+        --format junit \
+        --silent \
+        --output /helm/kubescape_mitre.xml
+    
+    - name: upload datree testresult
+      uses: actions/upload-artifact@master
+      with:
+        name: kubescape_mitre
+        path: ./kubescape_mitre.xml
+        if-no-files-found: error
         
   final:
-    needs: [inital-setup, test_hadolint, test_dockerfile_lint, test_helm_conftest, test_docker_conftest, test_trivy_low_med_high, test_trivy_crit, test_checkov, test_datree]
+    needs: [inital-setup, test_hadolint, test_dockerfile_lint, test_helm_conftest, test_docker_conftest, test_trivy_low_med_high, test_trivy_crit, test_checkov, test_datree, test_kubescape_nsa, test_kubescape_mitre]
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
 
+    - name: download kubescape_nsa result
+      uses: actions/download-artifact@master
+      with:
+        name: kubescape_nsa
+
+    - name: download kubescape_mitre result
+      uses: actions/download-artifact@master
+      with:
+        name: kubescape_mitre
 
     - name: download hadolint result
       uses: actions/download-artifact@master
@@ -324,6 +391,8 @@ jobs:
         mv checkov.xml  tests/${{needs.inital-setup.outputs.date}}_checkov.xml
         mv datree.xml  tests/${{needs.inital-setup.outputs.date}}_datree.xml
         mv helm_conftest.xml tests/${{needs.inital-setup.outputs.date}}_helm_conftest.xml
+        mv kubescape_nsa.xml tests/${{needs.inital-setup.outputs.date}}_kubescape_nsa.xml
+        mv kubescape_mitre.xml tests/${{needs.inital-setup.outputs.date}}_kubescape_mitre.xml
 
     - name: clean before push
       run: |
