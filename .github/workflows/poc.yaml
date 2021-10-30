@@ -203,6 +203,33 @@ jobs:
         name: checkov
         path: ./checkov.xml
         if-no-files-found: error
+
+  test_datree:
+    needs: inital-setup
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: download helmtemplate
+      uses: actions/download-artifact@master
+      with:
+        name: helmtemplate
+
+    - name: Run datree
+      run: |
+        docker run --rm \
+        -i datree/datree \
+        test helmtemplate.yaml \
+        --schema-version 1.21.0 \
+        --output xml
+        > datree.xml
+    
+    - name: upload datree testresult
+      uses: actions/upload-artifact@master
+      with:
+        name: datree
+        path: ./datree.xml
+        if-no-files-found: error
         
   final:
     needs: [inital-setup, test_hadolint, test_dockerfile_lint, test_docker_conftest, test_trivy_low_med_high, test_trivy_crit, test_checkov]
@@ -222,10 +249,10 @@ jobs:
       with:
         name: dockerfile_lint
 
-    - name: download docker_conftest result
-      uses: actions/download-artifact@master
-      with:
-        name: docker_conftest
+    #- name: download docker_conftest result
+    #  uses: actions/download-artifact@master
+    #  with:
+    #    name: docker_conftest
 
     - name: download trivy low mid high result
       uses: actions/download-artifact@master
@@ -241,16 +268,21 @@ jobs:
       uses: actions/download-artifact@master
       with:
         name: checkov
+
+    - name: download datree result
+      uses: actions/download-artifact@master
+      with:
+        name: datree
         
     - name: Move every result in test folder
-      if: always()
+      # mv docker_conftest.xml tests/${{needs.inital-setup.outputs.date}}_docker_conftest.xml
       run: |
-        mv docker_conftest.xml tests/${{needs.inital-setup.outputs.date}}_docker_conftest.xml
         mv hadolint.xml tests/${{needs.inital-setup.outputs.date}}_hadolint.xml
         mv dockerfile_lint.xml tests/${{needs.inital-setup.outputs.date}}_dockerfile_lint.xml
         mv junit-report-low-med-high.xml tests/${{needs.inital-setup.outputs.date}}_junit-report-low-med-high.xml
         mv junit-report-crit.xml tests/${{needs.inital-setup.outputs.date}}_junit-report-crit.xml
         mv checkov.xml  tests/${{needs.inital-setup.outputs.date}}_checkov.xml
+        mv datree.xml  tests/${{needs.inital-setup.outputs.date}}_datree.xml
         
     - name: clean before push
       run: |
