@@ -81,9 +81,9 @@ jobs:
         bridgecrew/checkov \
         --quiet \
         --compact \
-        -f /helm/helmtemplate.yaml \
-        -o junitxml
-        -s
+        --file /helm/helmtemplate.yaml \
+        --output junitxml \
+        --soft-fail
         
   final:
     needs: [test_trivy_low_med_high, test_trivy_crit, test_checkov]
