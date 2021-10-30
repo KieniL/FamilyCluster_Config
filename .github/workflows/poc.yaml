@@ -218,8 +218,9 @@ jobs:
     - name: Run datree
       run: |
         docker run --rm \
+        -v"$(pwd):/helm" \
         -i datree/datree \
-        test helmtemplate.yaml \
+        test /helm/helmtemplate.yaml \
         --schema-version 1.21.0 \
         --output xml
         > datree.xml
