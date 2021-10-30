@@ -18,6 +18,8 @@ jobs:
       run: |
         helm show values k8s/familychart/ > helmvalues.yaml
         mkdir -p tests
+        DATE_TMP=$(date +%s)
+        echo "DATE=$DATE_TMP" >> $GITHUB_ENV
         
     - name: Run trivy on low,medium high
       run: |
@@ -30,7 +32,7 @@ jobs:
         --exit-code 0 \
         --severity LOW,MEDIUM,HIGH \
         --format template --template "@contrib/junit.tpl" \
-        -o src/junit-report-low-med-high.xml \
+        -o src/junit-report-low-med-high_${{ env.DATE }}.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
        
@@ -45,14 +47,14 @@ jobs:
         --exit-code 0 \
         --severity CRITICAL \
         --format template --template "@contrib/junit.tpl" \
-        -o src/junit-report-crit.xml \
+        -o src/junit-report-crit_${{ env.DATE }}.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
         
     - name: Move every result in test folder
       run: |
-        mv junit-report-low-med-high.xml tests/junit-report-low-med-high.xml
-        mv junit-report-crit.xml tests/junit-report-crit.xml
+        mv junit-report-low-med-high_${{ env.DATE }}.xml tests/junit-report-low-med-high_${{ env.DATE }}.xml
+        mv junit-report-crit_${{ env.DATE }}.xml tests/junit-report-crit_${{ env.DATE }}.xml
         
     - uses: EndBug/add-and-commit@v7
       with:
