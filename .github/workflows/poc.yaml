@@ -29,12 +29,14 @@ jobs:
       with:
         name: helmvalues
         path: ./helmvalues.yaml
+        if-no-files-found: error
         
     - name: upload helmtemplate
       uses: actions/upload-artifact@master
       with:
         name: helmtemplate
         path: ./helmtemplate.yaml
+        if-no-files-found: error
       
   test_trivy_low_med_high:
     needs: inital-setup
@@ -57,15 +59,16 @@ jobs:
         --exit-code 0 \
         --severity LOW,MEDIUM,HIGH \
         --format template --template "@contrib/junit.tpl" \
-        -o src/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml \
+        -o src/junit-report-low-med-high.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
         
     - name: upload junit testresult
       uses: actions/upload-artifact@master
       with:
-        name: junit-report-low-med-high_${{needs.inital-setup.outputs.date}}
-        path: ./junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml
+        name: junit-report-low-med-high
+        path: ./junit-report-low-med-high
+        if-no-files-found: error
 
   test_trivy_crit:
     needs: inital-setup
@@ -89,15 +92,16 @@ jobs:
         --exit-code 0 \
         --severity CRITICAL \
         --format template --template "@contrib/junit.tpl" \
-        -o src/junit-report-crit_${{needs.inital-setup.outputs.date}}.xml \
+        -o src/junit-report-crit.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
         
     - name: upload junit testresult
       uses: actions/upload-artifact@master
       with:
-        name: junit-report-crit_${{needs.inital-setup.outputs.date}}
-        path: ./junit-report-crit_${{needs.inital-setup.outputs.date}}.xml
+        name: junit-report-crit
+        path: ./junit-report-crit.xml
+        if-no-files-found: error
 
   test_checkov:
     needs: inital-setup
@@ -118,13 +122,14 @@ jobs:
         --compact \
         --file /helm/helmtemplate.yaml \
         --output junitxml \
-        --soft-fail > checkov_${{needs.inital-setup.outputs.date}}.xml
+        --soft-fail > checkov.xml
     
     - name: upload checkov testresult
       uses: actions/upload-artifact@master
       with:
-        name: checkov_${{needs.inital-setup.outputs.date}}
-        path: ./checkov_${{needs.inital-setup.outputs.date}}.xml
+        name: checkov
+        path: ./checkov.xml
+        if-no-files-found: error
         
   final:
     needs: [inital-setup, test_trivy_low_med_high, test_trivy_crit, test_checkov]
@@ -135,23 +140,23 @@ jobs:
     - name: download trivy low mid high result
       uses: actions/download-artifact@master
       with:
-        name: junit-report-low-med-high_${{needs.inital-setup.outputs.date}}
+        name: junit-report-low-med-high
         
     - name: download trivy crit result
       uses: actions/download-artifact@master
       with:
-        name: junit-report-crit_${{needs.inital-setup.outputs.date}}
+        name: junit-report-crit
         
     - name: download checkov result
       uses: actions/download-artifact@master
       with:
-        name: checkov_${{needs.inital-setup.outputs.date}}
+        name: checkov
         
     - name: Move every result in test folder
       run: |
-        mv junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml tests/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml
-        mv junit-report-crit_${{needs.inital-setup.outputs.date}}.xml tests/junit-report-crit_${{needs.inital-setup.outputs.date}}.xml
-        mv checkov_${{needs.inital-setup.outputs.date}}.xml  tests/checkov_${{needs.inital-setup.outputs.date}}.xml
+        mv junit-report-low-med-high.xml tests/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml
+        mv junit-report-crit.xml tests/junit-report-crit_${{needs.inital-setup.outputs.date}}.xml
+        mv checkov.xml  tests/checkov_${{needs.inital-setup.outputs.date}}.xml
         
     - name: clean before push
       run: |
