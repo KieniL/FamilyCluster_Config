@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
+  tests:
 
     runs-on: ubuntu-latest
 
@@ -26,5 +26,18 @@ jobs:
         --exit-code 0 \
         --severity LOW,MEDIUM,HIGH \
         --format template --template "@contrib/junit.tpl" \
+        -o tests/junit-report-low-med-high.xml \
+        --ignore-unfixed \
+        'luke19/familycluster_installer@{}' && \
+        
+        docker run --rm \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v $HOME/Library/Caches:/root/.cache/ \
+        -v "$(pwd):/src" \
+        aquasec/trivy \
+        --exit-code 0 \
+        --severity CRITICAL \
+        --format template --template "@contrib/junit.tpl" \
+        -o tests/junit-report-crit.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
