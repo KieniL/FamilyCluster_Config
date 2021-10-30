@@ -160,8 +160,8 @@ jobs:
         
     - name: clean before push
       run: |
-        rm helmvalues.yaml
-        rm helmtemplate.yaml
+        rm helmvalues.yaml || true
+        rm helmtemplate.yaml || true
         
     - uses: EndBug/add-and-commit@v7
       with:
