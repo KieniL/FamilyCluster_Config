@@ -17,6 +17,7 @@ jobs:
     - name: Provided necessary things
       run: |
         helm show values k8s/familychart/ > helmvalues.yaml
+        helm template familyapp k8s/familychart/ --skip-tests --values k8s/familychart/values.yaml > helmtemplate.yaml
         mkdir -p tests
         DATE_TMP=$(date +%s)
         echo "DATE=$DATE_TMP" >> $GITHUB_ENV
@@ -50,6 +51,10 @@ jobs:
         -o src/junit-report-crit_${{ env.DATE }}.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
+        
+    - name: Run checkov
+      run: |
+        docker run -t -v"$(pwd):/helm" bridgecrew/checkov --quiet --compact -f /helm/helmtemplate.yaml
         
     - name: Move every result in test folder
       run: |
