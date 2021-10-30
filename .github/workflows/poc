@@ -1,0 +1,31 @@
+name: test helm release
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Run trivy
+      run: |
+        helm show values k8s/familychart/ > helmvalues.yaml
+        cat helmvalues.yaml | yq .installer.image | xargs -n1 -I{} \
+        docker run --rm \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        -v $HOME/Library/Caches:/root/.cache/ \
+        -v "$(pwd):/src" \
+        aquasec/trivy \
+        --exit-code 0 \
+        --severity LOW,MEDIUM,HIGH \
+        --format template --template "@contrib/junit.tpl" \
+        -o src/junit-report-low-med-high.xml \
+        --ignore-unfixed \
+        'luke19/familycluster_installer@{}'
