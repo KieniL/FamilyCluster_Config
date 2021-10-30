@@ -123,8 +123,8 @@ jobs:
     - name: upload checkov testresult
       uses: actions/upload-artifact@master
       with:
-        name: checkov_${{needs.inital-setup.outputs.date}}}
-        path: ./checkov_${{needs.inital-setup.outputs.date}}}.xml
+        name: checkov_${{needs.inital-setup.outputs.date}}
+        path: ./checkov_${{needs.inital-setup.outputs.date}}.xml
         
   final:
     needs: [inital-setup, test_trivy_low_med_high, test_trivy_crit, test_checkov]
