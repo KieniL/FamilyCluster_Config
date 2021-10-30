@@ -20,14 +20,18 @@ jobs:
         DATE_TMP=$(date +%s)
         echo "DATE=$DATE_TMP" >> $GITHUB_ENV
         echo "::set-output name=date::$DATE_TMP"
+        
         helm show values k8s/familychart/ > helmvalues.yaml
         helm template familyapp k8s/familychart/ --skip-tests --values k8s/familychart/values.yaml > helmtemplate.yaml
         
-    - uses: actions/upload-artifact@master
+    - name: upload helmvalues
+      uses: actions/upload-artifact@master
       with:
         name: helmvalues
         path: ./helmvalues.yaml
-    - uses: actions/upload-artifact@master
+        
+    - name: upload helmtemplate
+      uses: actions/upload-artifact@master
       with:
         name: helmtemplate
         path: ./helmtemplate.yaml
@@ -38,7 +42,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/download-artifact@master
+    - name: download helmvalues
+      uses: actions/download-artifact@master
       with:
         name: helmvalues
     - name: Run trivy on low,medium high
@@ -55,6 +60,12 @@ jobs:
         -o src/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
+        
+    - name: upload junit testresult
+      uses: actions/upload-artifact@master
+      with:
+        name: junit-report-low-med-high_${{needs.inital-setup.outputs.date}}
+        path: src/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml
 
   test_trivy_crit:
     needs: inital-setup
@@ -62,9 +73,11 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/download-artifact@master
+    - name: download helmvalues
+      uses: actions/download-artifact@master
       with:
         name: helmvalues
+        
     - name: Run trivy on high
       run: |        
         cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
@@ -79,6 +92,12 @@ jobs:
         -o src/junit-report-crit_${{needs.inital-setup.outputs.date}}.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
+        
+    - name: upload junit testresult
+      uses: actions/upload-artifact@master
+      with:
+        name: junit-report-crit_${{needs.inital-setup.outputs.date}}
+        path: src/junit-report-crit_${{needs.inital-setup.outputs.date}}.xml
 
   test_checkov:
     needs: inital-setup
@@ -86,7 +105,8 @@ jobs:
     
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/download-artifact@master
+    - name: download helmtemplate
+      uses: actions/download-artifact@master
       with:
         name: helmtemplate
     - name: Run checkov
@@ -98,17 +118,40 @@ jobs:
         --compact \
         --file /helm/helmtemplate.yaml \
         --output junitxml \
-        --soft-fail > tests/checkov_${{ env.DATE }}.xml
+        --soft-fail > tests/checkov_${{needs.inital-setup.outputs.date}}.xml
+    
+    - name: upload checkov testresult
+      uses: actions/upload-artifact@master
+      with:
+        name: checkov_${{needs.inital-setup.outputs.date}}}
+        path: tests/checkov_${{needs.inital-setup.outputs.date}}}.xml
         
   final:
-    needs: [test_trivy_low_med_high, test_trivy_crit, test_checkov]
+    needs: [inital-setup, test_trivy_low_med_high, test_trivy_crit, test_checkov]
     runs-on: ubuntu-latest
     
     steps:
+    
+    - name: download trivy low mid high result
+      uses: actions/download-artifact@master
+      with:
+        name: junit-report-low-med-high_${{needs.inital-setup.outputs.date}}
+        
+    - name: download trivy crit result
+      uses: actions/download-artifact@master
+      with:
+        name: junit-report-crit_${{needs.inital-setup.outputs.date}}
+        
+    - name: download checkov result
+      uses: actions/download-artifact@master
+      with:
+        name: checkov_${{needs.inital-setup.outputs.date}}}
+        
     - name: Move every result in test folder
       run: |
         mv junit-report-low-med-high_${{ env.DATE }}.xml tests/junit-report-low-med-high_${{ env.DATE }}.xml
         mv junit-report-crit_${{ env.DATE }}.xml tests/junit-report-crit_${{ env.DATE }}.xml
+        mv checkov_${{needs.inital-setup.outputs.date}}}.xml  tests/checkov_${{needs.inital-setup.outputs.date}}}.xml
         
     - name: clean before push
       run: |
