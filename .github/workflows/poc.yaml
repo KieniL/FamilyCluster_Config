@@ -217,6 +217,7 @@ jobs:
 
     - name: Run datree
       run: |
+        set -x
         docker run --rm \
         -v"$(pwd):/helm" \
         -i datree/datree \
