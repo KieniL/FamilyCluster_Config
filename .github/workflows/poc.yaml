@@ -27,7 +27,6 @@ jobs:
         echo "DATE=$DATE_TMP" >> $GITHUB_ENV
         echo "::set-output name=date::$DATE_TMP"
         echo "::set-output name=helmvalues::$(cat helmvalues.yaml)"
-        echo "::set-output name=helmtemplate::$(cat helmtemplate.yaml)"
         
   test_trivy_low_med_high:
     needs: inital-setup
@@ -37,7 +36,7 @@ jobs:
     
     - name: Run trivy on low,medium high
       run: |
-        cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
+        ${{needs.inital-setup.outputs.helmvalues}} | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
         docker run --rm \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $HOME/Library/Caches:/root/.cache/ \
@@ -46,7 +45,7 @@ jobs:
         --exit-code 0 \
         --severity LOW,MEDIUM,HIGH \
         --format template --template "@contrib/junit.tpl" \
-        -o src/junit-report-low-med-high_${{ env.DATE }}.xml \
+        -o src/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
 
@@ -57,7 +56,7 @@ jobs:
     steps:
     - name: Run trivy on high
       run: |
-        cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
+        ${{needs.inital-setup.outputs.helmvalues}} | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
         docker run --rm \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $HOME/Library/Caches:/root/.cache/ \
@@ -66,7 +65,7 @@ jobs:
         --exit-code 0 \
         --severity CRITICAL \
         --format template --template "@contrib/junit.tpl" \
-        -o src/junit-report-crit_${{ env.DATE }}.xml \
+        -o src/junit-report-crit_${{needs.inital-setup.outputs.date}}.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
 
@@ -77,6 +76,7 @@ jobs:
     steps:
     - name: Run checkov
       run: |
+        helm template familyapp k8s/familychart/ --skip-tests --values k8s/familychart/values.yaml > helmtemplate.yaml
         docker run --rm -t \
         -v"$(pwd):/helm" \
         bridgecrew/checkov \
