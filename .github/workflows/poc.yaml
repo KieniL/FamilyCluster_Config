@@ -151,7 +151,7 @@ jobs:
       run: |
         mv junit-report-low-med-high_${{ env.DATE }}.xml tests/junit-report-low-med-high_${{ env.DATE }}.xml
         mv junit-report-crit_${{ env.DATE }}.xml tests/junit-report-crit_${{ env.DATE }}.xml
-        mv checkov_${{needs.inital-setup.outputs.date}}}.xml  tests/checkov_${{needs.inital-setup.outputs.date}}}.xml
+        mv checkov_${{needs.inital-setup.outputs.date}}.xml  tests/checkov_${{needs.inital-setup.outputs.date}}.xml
         
     - name: clean before push
       run: |
