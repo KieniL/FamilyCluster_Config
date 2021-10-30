@@ -149,7 +149,7 @@ jobs:
         
     - name: Move every result in test folder
       run: |
-        mv junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml tests/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}}.xml
+        mv junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml tests/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml
         mv junit-report-crit_${{needs.inital-setup.outputs.date}}.xml tests/junit-report-crit_${{needs.inital-setup.outputs.date}}.xml
         mv checkov_${{needs.inital-setup.outputs.date}}.xml  tests/checkov_${{needs.inital-setup.outputs.date}}.xml
         
