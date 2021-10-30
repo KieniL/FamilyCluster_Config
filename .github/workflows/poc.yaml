@@ -37,7 +37,32 @@ jobs:
         name: helmtemplate
         path: ./helmtemplate.yaml
         if-no-files-found: error
-      
+
+  test_dockerfile_lint:
+    needs: inital-setup
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: download helmvalues
+      uses: actions/download-artifact@master
+      with:
+        name: helmvalues
+    - name: Run dockerfile_lint
+      run: |
+        docker run --rm -v $PWD:/root/ \
+        projectatomic/dockerfile-lint \
+        dockerfile_lint \
+        -u -f postman/Dockerfile \
+        > dockerfile_lint.xml
+        
+    - name: upload junit testresult
+      uses: actions/upload-artifact@master
+      with:
+        name: dockerfile_lint
+        path: ./dockerfile_lint.xml
+        if-no-files-found: error
+
   test_trivy_low_med_high:
     needs: inital-setup
     runs-on: ubuntu-latest
@@ -132,11 +157,17 @@ jobs:
         if-no-files-found: error
         
   final:
-    needs: [inital-setup, test_trivy_low_med_high, test_trivy_crit, test_checkov]
+    needs: [inital-setup, test_dockerfile_lint, test_trivy_low_med_high, test_trivy_crit, test_checkov]
     runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v2
+
+    - name: download dockerfile_lint result
+      uses: actions/download-artifact@master
+      with:
+        name: dockerfile_lint
+
     - name: download trivy low mid high result
       uses: actions/download-artifact@master
       with:
@@ -154,6 +185,7 @@ jobs:
         
     - name: Move every result in test folder
       run: |
+        mv dockerfile_lint.xml tests/${{needs.inital-setup.outputs.date}}_dockerfile_lint.xml
         mv junit-report-low-med-high.xml tests/${{needs.inital-setup.outputs.date}}_junit-report-low-med-high.xml
         mv junit-report-crit.xml tests/${{needs.inital-setup.outputs.date}}_junit-report-crit.xml
         mv checkov.xml  tests/${{needs.inital-setup.outputs.date}}_checkov.xml
