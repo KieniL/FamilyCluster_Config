@@ -154,9 +154,9 @@ jobs:
         
     - name: Move every result in test folder
       run: |
-        mv junit-report-low-med-high.xml tests/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml
-        mv junit-report-crit.xml tests/junit-report-crit_${{needs.inital-setup.outputs.date}}.xml
-        mv checkov.xml  tests/checkov_${{needs.inital-setup.outputs.date}}.xml
+        mv junit-report-low-med-high.xml tests/${{needs.inital-setup.outputs.date}}_junit-report-low-med-high.xml
+        mv junit-report-crit.xml tests/${{needs.inital-setup.outputs.date}}_junit-report-crit.xml
+        mv checkov.xml  tests/${{needs.inital-setup.outputs.date}}_checkov.xml
         
     - name: clean before push
       run: |
