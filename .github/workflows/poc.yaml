@@ -30,7 +30,7 @@ jobs:
         --exit-code 0 \
         --severity LOW,MEDIUM,HIGH \
         --format template --template "@contrib/junit.tpl" \
-        -o tests/junit-report-low-med-high.xml \
+        -o src/junit-report-low-med-high.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
        
@@ -45,9 +45,14 @@ jobs:
         --exit-code 0 \
         --severity CRITICAL \
         --format template --template "@contrib/junit.tpl" \
-        -o tests/junit-report-crit.xml \
+        -o src/junit-report-crit.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
+        
+    - name: Move every result in test folder
+      run: |
+        mv junit-report-low-med-high.xml tests/junit-report-low-med-high.xml
+        mv junit-report-crit.xml tests/junit-report-crit.xml
         
     - uses: EndBug/add-and-commit@v7
       with:
