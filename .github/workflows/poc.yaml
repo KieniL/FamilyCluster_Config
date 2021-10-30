@@ -233,7 +233,7 @@ jobs:
         if-no-files-found: error
         
   final:
-    needs: [inital-setup, test_hadolint, test_dockerfile_lint, test_docker_conftest, test_trivy_low_med_high, test_trivy_crit, test_checkov]
+    needs: [inital-setup, test_hadolint, test_dockerfile_lint, test_docker_conftest, test_trivy_low_med_high, test_trivy_crit, test_checkov, test_datree]
     runs-on: ubuntu-latest
     
     steps:
