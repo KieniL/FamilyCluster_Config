@@ -7,13 +7,12 @@ on:
     branches: [ main ]
 
 jobs:
-  tests:
-
+  inital-setup:
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v2
-
+    
     - name: Provided necessary things
       run: |
         helm show values k8s/familychart/ > helmvalues.yaml
@@ -22,6 +21,12 @@ jobs:
         DATE_TMP=$(date +%s)
         echo "DATE=$DATE_TMP" >> $GITHUB_ENV
         
+  test_trivy_low_med_high:
+    needs: inital-setup
+    runs-on: ubuntu-latest
+
+    steps:
+    
     - name: Run trivy on low,medium high
       run: |
         cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
@@ -36,7 +41,12 @@ jobs:
         -o src/junit-report-low-med-high_${{ env.DATE }}.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
-       
+
+  test_trivy_crit:
+    needs: inital-setup
+    runs-on: ubuntu-latest
+    
+    steps:
     - name: Run trivy on high
       run: |
         cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
@@ -51,20 +61,39 @@ jobs:
         -o src/junit-report-crit_${{ env.DATE }}.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
-        
+
+  test_checkov:
+    needs: inital-setup
+    runs-on: ubuntu-latest
+    
+    steps:
     - name: Run checkov
       run: |
-        docker run -t -v"$(pwd):/helm" bridgecrew/checkov --quiet --compact -f /helm/helmtemplate.yaml
+        docker run --rm -t \
+        -v"$(pwd):/helm" \
+        bridgecrew/checkov \
+        --quiet \
+        --compact \
+        -f /helm/helmtemplate.yaml \
+        -o junitxml
         
+  final:
+    needs: [test_trivy_low_med_high, test_trivy_crit, test_checkov]
+    runs-on: ubuntu-latest
+    
+    steps:
     - name: Move every result in test folder
       run: |
         mv junit-report-low-med-high_${{ env.DATE }}.xml tests/junit-report-low-med-high_${{ env.DATE }}.xml
         mv junit-report-crit_${{ env.DATE }}.xml tests/junit-report-crit_${{ env.DATE }}.xml
+        
+    - name: clean before push
+      run: |
+        rm helmvalues.yaml
+        rm helmtemplate.yaml
         
     - uses: EndBug/add-and-commit@v7
       with:
         message: Add test results
         committer_name: GitHub Actions
         committer_email: actions@github.com
-        
-
