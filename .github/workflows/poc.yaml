@@ -226,7 +226,6 @@ jobs:
       uses: actions/download-artifact@master
       with:
         name: docker_conftest
-        if-no-files-found: warn
 
     - name: download trivy low mid high result
       uses: actions/download-artifact@master
@@ -244,6 +243,7 @@ jobs:
         name: checkov
         
     - name: Move every result in test folder
+      if: always()
       run: |
         mv docker_conftest.xml tests/${{needs.inital-setup.outputs.date}}_docker_conftest.xml
         mv hadolint.xml tests/${{needs.inital-setup.outputs.date}}_hadolint.xml
