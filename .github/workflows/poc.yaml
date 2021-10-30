@@ -17,7 +17,7 @@ jobs:
     - name: Run trivy
       run: |
         helm show values k8s/familychart/ > helmvalues.yaml
-        cat helmvalues.yaml | yq .installer.image | xargs -n1 -I{} \
+        cat helmvalues.yaml | docker run -i --rm mikefarah/yq e .installer.image | xargs -n1 -I{} \
         docker run --rm \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $HOME/Library/Caches:/root/.cache/ \
