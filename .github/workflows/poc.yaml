@@ -100,7 +100,7 @@ jobs:
         --output junit \
         -p /totest/policy \
         /totest/postman/Dockerfile \
-        > docker_conftest.xml
+        > docker_conftest.xml | exit 0
         
     - name: upload junit testresult
       uses: actions/upload-artifact@master
@@ -217,14 +217,13 @@ jobs:
 
     - name: Run datree
       run: |
-        set -x
         docker run --rm \
         -v"$(pwd):/helm" \
         -i datree/datree \
         test /helm/helmtemplate.yaml \
         --schema-version 1.21.0 \
-        --output xml
-        > datree.xml
+        --output xml \
+        > datree.xml | exit 0
     
     - name: upload datree testresult
       uses: actions/upload-artifact@master
@@ -251,10 +250,10 @@ jobs:
       with:
         name: dockerfile_lint
 
-    #- name: download docker_conftest result
-    #  uses: actions/download-artifact@master
-    #  with:
-    #    name: docker_conftest
+    - name: download docker_conftest result
+      uses: actions/download-artifact@master
+      with:
+        name: docker_conftest
 
     - name: download trivy low mid high result
       uses: actions/download-artifact@master
@@ -277,8 +276,8 @@ jobs:
         name: datree
         
     - name: Move every result in test folder
-      # mv docker_conftest.xml tests/${{needs.inital-setup.outputs.date}}_docker_conftest.xml
       run: |
+        mv docker_conftest.xml tests/${{needs.inital-setup.outputs.date}}_docker_conftest.xml
         mv hadolint.xml tests/${{needs.inital-setup.outputs.date}}_hadolint.xml
         mv dockerfile_lint.xml tests/${{needs.inital-setup.outputs.date}}_dockerfile_lint.xml
         mv junit-report-low-med-high.xml tests/${{needs.inital-setup.outputs.date}}_junit-report-low-med-high.xml
