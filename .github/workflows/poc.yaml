@@ -3,14 +3,12 @@ name: test helm release
 on:
   push:
     branches: [ main ]
-    paths:
-    - '*'
-    - '!tests/**'
+    paths-ignore:
+      - 'tests/**'
   pull_request:
     branches: [ main ]
-    paths:
-    - '*'
-    - '!tests/**'
+    paths-ignore:
+      - 'tests/**'
 
 jobs:
   inital-setup:
