@@ -231,9 +231,38 @@ jobs:
         name: datree
         path: ./datree.xml
         if-no-files-found: error
+
+  test_helm_conftest:
+    needs: inital-setup
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: download helmtemplate
+      uses: actions/download-artifact@master
+      with:
+        name: helmtemplate
+    
+    - name: Run docker conftest
+      run: |
+        docker run --rm -i \
+        -v $PWD:/totest \
+        openpolicyagent/conftest test \
+        --output junit \
+        -p /totest/policy \
+        /totest/helmtemplate.yaml \
+        > helm_conftest.xml | exit 0
+        
+    - name: upload junit testresult
+      uses: actions/upload-artifact@master
+      with:
+        name: helm_conftest
+        path: ./helm_conftest.xml
+        if-no-files-found: error
         
   final:
-    needs: [inital-setup, test_hadolint, test_dockerfile_lint, test_docker_conftest, test_trivy_low_med_high, test_trivy_crit, test_checkov, test_datree]
+    needs: [inital-setup, test_hadolint, test_dockerfile_lint, test_helm_conftest, test_docker_conftest, test_trivy_low_med_high, test_trivy_crit, test_checkov, test_datree]
     runs-on: ubuntu-latest
     
     steps:
@@ -274,6 +303,12 @@ jobs:
       uses: actions/download-artifact@master
       with:
         name: datree
+
+    - name: download helm_conftest result
+      uses: actions/download-artifact@master
+      with:
+        name: helm_conftest
+
         
     - name: Move every result in test folder
       run: |
@@ -284,7 +319,8 @@ jobs:
         mv junit-report-crit.xml tests/${{needs.inital-setup.outputs.date}}_junit-report-crit.xml
         mv checkov.xml  tests/${{needs.inital-setup.outputs.date}}_checkov.xml
         mv datree.xml  tests/${{needs.inital-setup.outputs.date}}_datree.xml
-        
+        mv helm_conftest.xml tests/${{needs.inital-setup.outputs.date}}_helm_conftest.xml
+
     - name: clean before push
       run: |
         rm helmvalues.yaml || true
