@@ -13,7 +13,6 @@ jobs:
       date: ${{ steps.step1.outputs.date }}
       helmvalues: ${{ steps.step1.outputs.helmvalues }}
       helmtemplate: ${{ steps.step1.outputs.helmtemplate }}
-      
     steps:
     - uses: actions/checkout@v2
     
@@ -26,7 +25,7 @@ jobs:
         DATE_TMP=$(date +%s)
         echo "DATE=$DATE_TMP" >> $GITHUB_ENV
         echo "::set-output name=date::$DATE_TMP"
-        echo "::set-output name=helmvalues::$(cat helmvalues.yaml)"
+        echo "::set-output name=helmvalues::$(helmvalues)"
         
   test_trivy_low_med_high:
     needs: inital-setup
@@ -74,6 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - uses: actions/checkout@v2
     - name: Run checkov
       run: |
         helm template familyapp k8s/familychart/ --skip-tests --values k8s/familychart/values.yaml > helmtemplate.yaml
