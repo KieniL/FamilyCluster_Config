@@ -65,7 +65,7 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: junit-report-low-med-high_${{needs.inital-setup.outputs.date}}
-        path: src/junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml
+        path: ./junit-report-low-med-high_${{needs.inital-setup.outputs.date}}.xml
 
   test_trivy_crit:
     needs: inital-setup
@@ -97,7 +97,7 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: junit-report-crit_${{needs.inital-setup.outputs.date}}
-        path: src/junit-report-crit_${{needs.inital-setup.outputs.date}}.xml
+        path: ./junit-report-crit_${{needs.inital-setup.outputs.date}}.xml
 
   test_checkov:
     needs: inital-setup
@@ -118,13 +118,13 @@ jobs:
         --compact \
         --file /helm/helmtemplate.yaml \
         --output junitxml \
-        --soft-fail > tests/checkov_${{needs.inital-setup.outputs.date}}.xml
+        --soft-fail > checkov_${{needs.inital-setup.outputs.date}}.xml
     
     - name: upload checkov testresult
       uses: actions/upload-artifact@master
       with:
         name: checkov_${{needs.inital-setup.outputs.date}}}
-        path: tests/checkov_${{needs.inital-setup.outputs.date}}}.xml
+        path: ./checkov_${{needs.inital-setup.outputs.date}}}.xml
         
   final:
     needs: [inital-setup, test_trivy_low_med_high, test_trivy_crit, test_checkov]
