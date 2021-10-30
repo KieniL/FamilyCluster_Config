@@ -207,7 +207,6 @@ jobs:
   final:
     needs: [inital-setup, test_hadolint, test_dockerfile_lint, test_docker_conftest, test_trivy_low_med_high, test_trivy_crit, test_checkov]
     runs-on: ubuntu-latest
-    continue-on-error: true
     
     steps:
     - uses: actions/checkout@v2
@@ -227,6 +226,7 @@ jobs:
       uses: actions/download-artifact@master
       with:
         name: docker_conftest
+        if-no-files-found: warn
 
     - name: download trivy low mid high result
       uses: actions/download-artifact@master
