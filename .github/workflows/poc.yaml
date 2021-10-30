@@ -14,10 +14,13 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Run trivy
+    - name: Provided necessary things
       run: |
         helm show values k8s/familychart/ > helmvalues.yaml
         mkdir -p tests
+        
+    - name: Run trivy on low,medium high
+      run: |
         cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
         docker run --rm \
         -v /var/run/docker.sock:/var/run/docker.sock \
@@ -29,8 +32,11 @@ jobs:
         --format template --template "@contrib/junit.tpl" \
         -o tests/junit-report-low-med-high.xml \
         --ignore-unfixed \
-        'luke19/familycluster_installer@{}' && \
-        
+        'luke19/familycluster_installer@{}'
+       
+    - name: Run trivy on high
+      run: |
+        cat helmvalues.yaml | docker run -i --rm mikefarah/yq e '.installer.image' - | xargs -n1 -I{} \
         docker run --rm \
         -v /var/run/docker.sock:/var/run/docker.sock \
         -v $HOME/Library/Caches:/root/.cache/ \
@@ -42,3 +48,11 @@ jobs:
         -o tests/junit-report-crit.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
+        
+    - uses: EndBug/add-and-commit@v7
+      with:
+        message: Add test results
+        committer_name: GitHub Actions
+        committer_email: actions@github.com
+        
+
