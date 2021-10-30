@@ -26,6 +26,5 @@ jobs:
         --exit-code 0 \
         --severity LOW,MEDIUM,HIGH \
         --format template --template "@contrib/junit.tpl" \
-        -o src/junit-report-low-med-high.xml \
         --ignore-unfixed \
         'luke19/familycluster_installer@{}'
