@@ -281,7 +281,7 @@ jobs:
         -i quay.io/armosec/kubescape \
         scan framework nsa \
         /helm/helmtemplate.yaml \
-        --keep-local \
+        --keep-local true \
         --format junit \
         --silent \
         --output /helm/kubescape_nsa.xml
@@ -311,7 +311,7 @@ jobs:
         -i quay.io/armosec/kubescape \
         scan framework mitre \
         /helm/helmtemplate.yaml \
-        --keep-local \
+        --keep-local true \
         --format junit \
         --silent \
         --output /helm/kubescape_mitre.xml
@@ -398,10 +398,6 @@ jobs:
       run: |
         rm helmvalues.yaml || true
         rm helmtemplate.yaml || true
-    - uses: anyone-developer/anyone-validate-xml@main
-      with:
-        file-extension: '.xml'
-        read-path: 'tests'
 
     - uses: EndBug/add-and-commit@v7
       with:
