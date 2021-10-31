@@ -284,7 +284,7 @@ jobs:
         --keep-local true \
         --format junit \
         --silent \
-        --output /helm/kubescape_nsa.xml
+        > kubescape_nsa.xml
     
     - name: upload datree testresult
       uses: actions/upload-artifact@master
@@ -314,7 +314,7 @@ jobs:
         --keep-local true \
         --format junit \
         --silent \
-        --output /helm/kubescape_mitre.xml
+        > kubescape_mitre.xml
     
     - name: upload datree testresult
       uses: actions/upload-artifact@master
