@@ -398,7 +398,11 @@ jobs:
       run: |
         rm helmvalues.yaml || true
         rm helmtemplate.yaml || true
-        
+    - uses: anyone-developer/anyone-validate-xml@main
+      with:
+        file-extension: '.xml'
+        read-path: 'tests'
+
     - uses: EndBug/add-and-commit@v7
       with:
         message: Add test results
