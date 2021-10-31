@@ -283,8 +283,7 @@ jobs:
         /helm/helmtemplate.yaml \
         --keep-local true \
         --format junit \
-        --silent \
-        > kubescape_nsa.xml
+        --output helm/kubescape_nsa.xml
     
     - name: upload datree testresult
       uses: actions/upload-artifact@master
@@ -313,8 +312,7 @@ jobs:
         /helm/helmtemplate.yaml \
         --keep-local true \
         --format junit \
-        --silent \
-        > kubescape_mitre.xml
+        --output helm/kubescape_mitre.xml
     
     - name: upload datree testresult
       uses: actions/upload-artifact@master
