@@ -281,10 +281,9 @@ jobs:
         -i quay.io/armosec/kubescape \
         scan framework nsa \
         /helm/helmtemplate.yaml \
-        --keep-local \
+        --keep-local true \
         --format junit \
-        --silent \
-        --output /helm/kubescape_nsa.xml
+        --output helm/kubescape_nsa.xml
     
     - name: upload datree testresult
       uses: actions/upload-artifact@master
@@ -311,10 +310,9 @@ jobs:
         -i quay.io/armosec/kubescape \
         scan framework mitre \
         /helm/helmtemplate.yaml \
-        --keep-local \
+        --keep-local true \
         --format junit \
-        --silent \
-        --output /helm/kubescape_mitre.xml
+        --output helm/kubescape_mitre.xml
     
     - name: upload datree testresult
       uses: actions/upload-artifact@master
@@ -398,7 +396,7 @@ jobs:
       run: |
         rm helmvalues.yaml || true
         rm helmtemplate.yaml || true
-        
+
     - uses: EndBug/add-and-commit@v7
       with:
         message: Add test results
