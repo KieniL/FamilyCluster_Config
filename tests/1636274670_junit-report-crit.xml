@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+<testsuites>
+    <testsuite tests="3" failures="3" name="luke19/familypostman@sha256:1eeb4fd8b3f53be09f46ee4fc1d4a47e9ee450a2681b4d58e82283b73e5739f7 (alpine 3.11.11)" errors="0" skipped="0" time="">
+        <properties>
+            <property name="type" value="alpine"></property>
+        </properties>
+        <testcase classname="apk-tools-2.10.6-r0" name="[CRITICAL] CVE-2021-36159" time="">
+            <failure message="" type="description">libfetch before 2021-07-26, as used in apk-tools, xbps, and other products, mishandles numeric strings for the FTP and HTTP protocols. The FTP passive mode implementation allows an out-of-bounds read because strtol is used to parse the relevant numbers into address bytes. It does not check if the line ends prematurely. If it does, the for-loop condition checks for the &#39;\0&#39; terminator one byte too late.</failure>
+        </testcase>
+        <testcase classname="libcrypto1.1-1.1.1k-r0" name="[CRITICAL] CVE-2021-3711" time="">
+            <failure message="openssl: SM2 Decryption Buffer Overflow" type="description">In order to decrypt SM2 encrypted data an application is expected to call the API function EVP_PKEY_decrypt(). Typically an application will call this function twice. The first time, on entry, the &#34;out&#34; parameter can be NULL and, on exit, the &#34;outlen&#34; parameter is populated with the buffer size required to hold the decrypted plaintext. The application can then allocate a sufficiently sized buffer and call EVP_PKEY_decrypt() again, but this time passing a non-NULL value for the &#34;out&#34; parameter. A bug in the implementation of the SM2 decryption code means that the calculation of the buffer size required to hold the plaintext returned by the first call to EVP_PKEY_decrypt() can be smaller than the actual size required by the second call. This can lead to a buffer overflow when EVP_PKEY_decrypt() is called by the application a second time with a buffer that is too small. A malicious attacker who is able present SM2 content for decryption to an application could cause attacker chosen data to overflow the buffer by up to a maximum of 62 bytes altering the contents of other data held after the buffer, possibly changing application behaviour or causing the application to crash. The location of the buffer is application dependent but is typically heap allocated. Fixed in OpenSSL 1.1.1l (Affected 1.1.1-1.1.1k).</failure>
+        </testcase>
+        <testcase classname="libssl1.1-1.1.1k-r0" name="[CRITICAL] CVE-2021-3711" time="">
+            <failure message="openssl: SM2 Decryption Buffer Overflow" type="description">In order to decrypt SM2 encrypted data an application is expected to call the API function EVP_PKEY_decrypt(). Typically an application will call this function twice. The first time, on entry, the &#34;out&#34; parameter can be NULL and, on exit, the &#34;outlen&#34; parameter is populated with the buffer size required to hold the decrypted plaintext. The application can then allocate a sufficiently sized buffer and call EVP_PKEY_decrypt() again, but this time passing a non-NULL value for the &#34;out&#34; parameter. A bug in the implementation of the SM2 decryption code means that the calculation of the buffer size required to hold the plaintext returned by the first call to EVP_PKEY_decrypt() can be smaller than the actual size required by the second call. This can lead to a buffer overflow when EVP_PKEY_decrypt() is called by the application a second time with a buffer that is too small. A malicious attacker who is able present SM2 content for decryption to an application could cause attacker chosen data to overflow the buffer by up to a maximum of 62 bytes altering the contents of other data held after the buffer, possibly changing application behaviour or causing the application to crash. The location of the buffer is application dependent but is typically heap allocated. Fixed in OpenSSL 1.1.1l (Affected 1.1.1-1.1.1k).</failure>
+        </testcase>
+    </testsuite>
+    <testsuite tests="0" failures="0" name="Node.js" errors="0" skipped="0" time="">
+        <properties>
+            <property name="type" value="node-pkg"></property>
+        </properties>
+    </testsuite>
+</testsuites>
