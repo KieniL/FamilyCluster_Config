@@ -56,9 +56,9 @@ spec:
           authURL = ${AUTH_URL}
           {{- end }}`}}
         # PoC to inject into env variables args is then used to have it in the java process
-        vault.hashicorp.com/agent-inject-secret-poc: "k8s_secrets/family/anspardb"
+        vault.hashicorp.com/agent-inject-secret-poc: "k8s_secrets/family/test"
         vault.hashicorp.com/agent-inject-template-poc: |
-          {{`{{- with secret "k8s_secrets/family/anspardb" -}}
+          {{`{{- with secret "k8s_secrets/family/test" -}}
             export POC={{ .Data.db }}
           {{- end }}`}}
         # VAULT SETTINGS
