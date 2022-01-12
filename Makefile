@@ -1,9 +1,11 @@
 
+conftest:
+	conftest pull git::https://github.com/KieniL/confpolicy.git
 
 dockercheck_all: dockercheck_base dockercheck_family dockerhostcheck
 	
 
-dockercheck_base:
+dockercheck_base: conftest
 	dockerfilelint ../../DevOps/base_images/*/*
 	
 # False positives on dpkg-query so I had to disable it for automatic check
@@ -26,7 +28,7 @@ dockercheck_base:
 	hadolint -t error --config hadolint_config.yaml ../../DevOps/base_images/*/Dockerfile
 	conftest test ../../DevOps/base_images/*/Dockerfile
 
-dockercheck_family:
+dockercheck_family: conftest
 
 	dockerfilelint ../* -o cli
 
@@ -124,7 +126,7 @@ imagescan:
 	@rm helmvalues.yaml
 
 
-k8scheck:
+k8scheck: conftest
 	helm lint k8s/familychart
 	helm template familyapp k8s/familychart/ --skip-tests --values k8s/familychart/values.yaml > helmtemplate.yaml
 	cat helmtemplate.yaml | kubeval --strict --schema-location https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/
